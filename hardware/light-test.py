@@ -37,3 +37,39 @@ def turn_on_one_by_one(strip):
         if i > 0:
             strip.setPixelColor(i-1, Color(0, 0, 0)) # Off
         strip.setPixelColor(i, Color(0, 255, 255)) # Cyan
+        strip.show()
+
+# Main function
+if __name__ == '__main__':
+    # Process arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
+    args = parser.parse_args()
+
+    # Create NeoPixel object with appropriate configuration
+    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+    # Initialize the library (must be called once before other functions)
+    strip.begin()
+
+    print ('Press Ctrl-C to quit.')
+    if not args.clear:
+        print('Use "-c" argument to clear LEDs on exit')
+
+    try:
+        while True:
+            print ('Turning on...')
+            turn_on(strip)
+            time.sleep(2)
+            print ('Turning off...')
+            turn_off(strip)
+            time.sleep(2)
+            print ('Turning on one by one...')
+            turn_on_one_by_one(strip)
+            time.sleep(2)
+            print ('Turning off...')
+            turn_off(strip)
+            time.sleep(2)
+
+    except KeyboardInterrupt:
+        if args.clear:
+            turn_off(strip)
