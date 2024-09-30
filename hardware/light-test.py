@@ -33,11 +33,16 @@ def turn_off(strip):
 
 # Function to turn LEDs on one by one (previous one turns off)
 def turn_on_one_by_one(strip):
-    for i in range(strip.numPixels()):
-        if i > 0:
-            strip.setPixelColor(i-1, Color(0, 0, 0)) # Off
+    strip.setPixelColor(strip.numPixels()-1, Color(0, 255, 255))
+    strip.show()
+    time.sleep(0.1)
+
+    for i in range(strip.numPixels() - 1, 0, -1):
+        if i < strip.numPixels() - 1:
+            strip.setPixelColor(i+1, Color(0, 0, 0)) # Off
         strip.setPixelColor(i, Color(0, 255, 255)) # Cyan
         strip.show()
+        time.sleep(0.1)
 
 # Main function
 if __name__ == '__main__':
