@@ -9,6 +9,7 @@ import time
 from rpi_ws281x import *
 import argparse
 import random
+import threading
 
 # LED strip configuration:
 LED_COUNT      = 60      # Number of LED pixels
@@ -34,11 +35,28 @@ def turn_off(strip):
 
 # Function to turn LEDs on one by one (previous one turns off)
 def turn_on_one_by_one(strip):
-    for i in range(strip.numPixels() - 1, -7, -1):
+    for i in range(29, -7, -1):
         strip.setPixelColor(i+5, Color(0, 0, 0)) # Off
         strip.setPixelColor(i, Color(106, 13, 173)) #Purple
         strip.show()
         time.sleep(0.05)
+
+def turn_on_one_by_one2(strip): # Other direction
+    for i in range(30, 67):
+        strip.setPixelColor(i-5, Color(0, 0, 0)) # Off
+        strip.setPixelColor(i, Color(106, 13, 173)) #Purple
+        strip.show()
+        time.sleep(0.05)
+
+def call_functions_in_sync(strip):
+    thread1 = threading.Thread(target=turn_on_one_by_one, args=(strip,))
+    thread2 = threading.Thread(target=turn_on_one_by_one2, args=(strip,))
+
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
 
 # def turn_on_one_by_one(strip):
 #     for i in range(strip.numPixels()):
@@ -75,19 +93,34 @@ if __name__ == '__main__':
 
     try:
         while True:
-            print ('Turning on...')
-            turn_on(strip)
-            time.sleep(1)
-            print ('Turning off...')
-            turn_off(strip)
+            # print ('Turning on...')
+            # turn_on(strip)
             # time.sleep(1)
-            print ('Turning on one by one...')
-            turn_on_one_by_one(strip)
+            # print ('Turning off...')
+            # turn_off(strip)
+            # time.sleep(1)
+            # print ('Turning on one by one...')
+            # turn_on_one_by_one(strip)
+            # time.sleep(1)
+            # print ('Turning off...')
+            # turn_off(strip)
+            # time.sleep(1)
+
+            # Call both directions at the same time
+            # print ('Turning on one by one...')
+            # turn_on_one_by_one(strip)
+            # turn_on_one_by_one2(strip)
+            # time.sleep(1)
+            # print ('Turning off...')
+            # turn_off(strip)
+
+            print('Turning on one by one...')
+            call_functions_in_sync(strip)
             time.sleep(1)
-            print ('Turning off...')
+            print('Turning off...')
             turn_off(strip)
-            time.sleep(1)
-            turn_on_one_by_one(strip)
+
+            #turn_on_one_by_one(strip)
             # print('Completion...')
             # completion(strip)
             # time.sleep(2)
