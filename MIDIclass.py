@@ -1,6 +1,7 @@
 # a program to parse and compare two MIDI files and produce statistics on their overlap
 # Author: Olen Brown and Chaewon Shin
-import pretty_midi
+# import pretty_midi
+'''
 from collections import defaultdict
 
 # MIDI file custom class
@@ -41,8 +42,8 @@ class MIDIfile:
 
     def construct_interval_tree():
         return 0
-    
+'''
 def main():
-    myFile = MIDIfile("Happy_Birthday_To_You_Piano.mid", "website")
+    # myFile = MIDIfile("Happy_Birthday_To_You_Piano.mid", "website")
     print("complete")
 
