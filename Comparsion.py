@@ -13,7 +13,10 @@ class MIDIfile:
     def __init__(self, midi_file_path):
         # Initialize the MIDIfile by loading the MIDI data and extracting notes
         self.midi_data = pretty_midi.PrettyMIDI(midi_file_path)
-        self.notes = self.extract_notes()
+        self.extracted_notes = self.extract_notes()
+
+        self.note_intervals = {}
+        self.get_note_intervals()
 
     def extract_notes(self):
         # Extract all notes from all instruments in the MIDI file
@@ -21,14 +24,22 @@ class MIDIfile:
         for instrument in self.midi_data.instruments:
             all_notes.extend(instrument.notes)
         # Sort all notes by their start time
-        sorted_notes = sorted(all_notes, key=lambda note: note.start)
+        # sorted_notes = sorted(all_notes, key=lambda note: note.start)
         # print(" *sorted_notes* \n", sorted_notes)
-        return sorted_notes
+        return all_notes
 
     def get_note_intervals(self):
         # Return a list of tuples containing (pitch, start time, end time, note name) for each note
         # pitch, start-time, end-time, note name 
-        return [(note.pitch, note.start, note.end, pretty_midi.note_number_to_name(note.pitch)) for note in self.notes]
+        # return [(note.pitch, note.start, note.end, pretty_midi.note_number_to_name(note.pitch)) for note in self.notes]
+
+        for note in self.extracted_notes:
+            note_name = pretty_midi.note_number_to_name(note.pitch)
+
+            if note_name not in self.note_intervals:
+                self.note_intervals[note_name] = []
+
+            self.note_intervals[note_name].append((note.start, note.end))
 
 
 def compare_midi_files(midi_1_path, midi_2_path):
@@ -78,7 +89,7 @@ def compare_midi_files(midi_1_path, midi_2_path):
     if not correct_notes_list:
         print("No Correct Notes!")
     else:
-        # Print the details of the correct notes
+        # Print: the details of the correct notes
         for pitch, start, end, note_name in correct_notes_list:
             print(f"Pitch: {pitch}, Note: {note_name}, Start: {start:.2f}s, End: {end:.2f}s")
 
@@ -93,4 +104,6 @@ def compare_midi_files(midi_1_path, midi_2_path):
 # Compare two different MIDI songs
 # Happy_Birthday_Easy_to_play.mid
 # Happy_Birthday_To_You_Piano.mid
-compare_midi_files("Happy_Birthday_Easy_to_play.mid", "Happy_Birthday_To_You_Piano.mid") # user-played song, reference song
+#compare_midi_files("Happy_Birthday_Easy_to_play.mid", "Happy_Birthday_To_You_Piano.mid") # user-played song, reference song
+
+midi = MIDIfile("Happy_Birthday_Easy_to_play.mid")
