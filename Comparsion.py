@@ -26,7 +26,7 @@ class MIDIfile:
         return sorted_notes
 
     def get_note_intervals(self):
-        # Return a list of tuples containing (pitch, start time, end time) for each note
+        # Return a list of tuples containing (pitch, start time, end time, note name) for each note
         # pitch, start-time, end-time, note name 
         return [(note.pitch, note.start, note.end, pretty_midi.note_number_to_name(note.pitch)) for note in self.notes]
 
@@ -42,7 +42,9 @@ def compare_midi_files(midi_1_path, midi_2_path):
     intervals_2 = midi_2.get_note_intervals() # reference MIDI file
 
     correct_notes = 0
-    missed_notes = []
+    correct_notes_list = []
+    missed_notes = 0
+    missed_notes_list = []
     tolerance = 0.2  # Tolerance in seconds for timing deviation
 
     # Compare each note in the reference MIDI file to the user-played MIDI file
@@ -52,12 +54,14 @@ def compare_midi_files(midi_1_path, midi_2_path):
             # Check if the pitch matches, note name matches, and if both start and end times are within the tolerance
             if (pitch_1 == pitch_2 and note_name_1 == note_name_2 and
                     abs(start_1 - start_2) <= tolerance and abs(end_1 - end_2) <= tolerance):
+                correct_notes_list.append((pitch_1, start_1, end_1, note_name_1))
                 correct_notes += 1
                 matched = True
                 break
         if not matched:
             # If no match is found, add the note to the list of missed notes
-            missed_notes.append((pitch_2, start_2, end_2, note_name_2))
+            missed_notes += 1
+            missed_notes_list.append((pitch_2, start_2, end_2, note_name_2))
 
     # Calculate the accuracy as a percentage
     total_notes = len(intervals_2)  # Total number of notes in the reference MIDI file
@@ -68,14 +72,22 @@ def compare_midi_files(midi_1_path, midi_2_path):
 
     # Print the performance results
     print(f"Total notes: {total_notes}")
-    print(f"Correct notes: {correct_notes}")
     print(f"Accuracy: {accuracy:.2f}%")
-    print("Missed notes: ")
-    if not missed_notes:
+    
+    print(f"Correct notes: {correct_notes}")
+    if not correct_notes_list:
+        print("No Correct Notes!")
+    else:
+        # Print the details of the correct notes
+        for pitch, start, end, note_name in correct_notes_list:
+            print(f"Pitch: {pitch}, Note: {note_name}, Start: {start:.2f}s, End: {end:.2f}s")
+
+    print(f"Missed notes: {missed_notes}")
+    if not missed_notes_list:
         print("No Missed Notes!")
     else:
         # Print the details of the missed notes
-        for pitch, start, end, note_name in missed_notes:
+        for pitch, start, end, note_name in missed_notes_list:
             print(f"Pitch: {pitch}, Note: {note_name}, Start: {start:.2f}s, End: {end:.2f}s")
 
 # Compare two different MIDI songs
