@@ -25,10 +25,10 @@ def midi_to_led_array(midi_file_path):
 
             if msg.type == 'note_on' and msg.velocity > 0:
                 # Note on event
-                led_array.extend([(0, 0, 255)] * duration_leds) # Blue for note
+                led_array.extend([(255, 0, 0)] * duration_leds) # Blue for note
             elif msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0):
                 # Note off event or note on with velocity 0 (equivalent to note off)
-                led_array.extend([(0, 0, 0)] * duration_leds)  # Off for rest
+                led_array.extend([(0, 0, 255)] * duration_leds)  # Off for rest
 
     return led_array
 
