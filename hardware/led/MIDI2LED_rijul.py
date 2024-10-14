@@ -4,7 +4,7 @@ import time
 from rpi_ws281x import PixelStrip, Color
 
 # Constants for LED strip
-LED_COUNT      = 300     # Number of LED pixels.
+LED_COUNT      = 60     # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
@@ -25,7 +25,7 @@ def midi_to_led_array(midi_file_path):
 
             if msg.type == 'note_on' and msg.velocity > 0:
                 # Note on event
-                led_array.extend([(255, 0, 0)] * duration_leds) # Blue for note
+                led_array.extend([(0, 0, 0)] * duration_leds) # Blue for note
             elif msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0):
                 # Note off event or note on with velocity 0 (equivalent to note off)
                 led_array.extend([(0, 0, 255)] * duration_leds)  # Off for rest
@@ -43,17 +43,17 @@ def main():
 
     # Iterate through the LED array and update the strip
     for i in range(len(led_array) + LED_COUNT):
-        # Shift all LEDs down by one position
-        for j in range(LED_COUNT - 1, 0, -1):
-            strip.setPixelColor(j, strip.getPixelColor(j - 1))
+        # Shift all LEDs up by one position
+        for j in range(LED_COUNT - 1):
+            strip.setPixelColor(j, strip.getPixelColor(j + 1))
         
-        # Set the first LED to the current color or turn off if past the end of the array
+        # Set the last LED to the current color or turn off if past the end of the array
         if i < len(led_array):
             color = Color(*led_array[i])
         else:
             color = Color(0, 0, 0)  # Turn off the LED
         
-        strip.setPixelColor(0, color)
+        strip.setPixelColor(LED_COUNT - 1, color)
         
         # Update the strip
         strip.show()
