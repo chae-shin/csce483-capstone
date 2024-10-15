@@ -41,16 +41,52 @@ class MIDIfile:
 
             self.note_intervals[note_name].append((note.start, note.end))
 
+def generate_by_note_stat(midi_1_path, midi_2_path):
+    midi_1 = MIDIfile(midi_1_path)
+    midi_2 = MIDIfile(midi_2_path)
+ 
+
+    intervals_1 = midi_1.note_intervals() # user played MIDI file
+    intervals_2 = midi_2.note_intervals() # reference MIDI file
+
+    correct_notes = 0
+    correct_notes_list = []
+    missed_notes = 0
+    missed_notes_list = []
+    tolerance = 0.2  # Tolerance in seconds for timing deviation
+
+    # Compare each note in the reference MIDI file to the user-played MIDI file
+    for pitch_2, start_2, end_2, note_name_2 in intervals_2:
+        matched = False
+        for pitch_1, start_1, end_1, note_name_1 in intervals_1:
+            # Check if the pitch matches, note name matches, and if both start and end times are within the tolerance
+            if (pitch_1 == pitch_2 and note_name_1 == note_name_2 and
+                    abs(start_1 - start_2) <= tolerance and abs(end_1 - end_2) <= tolerance):
+                correct_notes_list.append((pitch_1, start_1, end_1, note_name_1))
+                correct_notes += 1
+                matched = True
+                break
+        if not matched:
+            # If no match is found, add the note to the list of missed notes
+            missed_notes += 1
+            missed_notes_list.append((pitch_2, start_2, end_2, note_name_2))
+
+    # Calculate the accuracy as a percentage
+    total_notes = len(intervals_2)  # Total number of notes in the reference MIDI file
+    if total_notes > 0:
+        accuracy = (correct_notes / total_notes) * 100
+    else:
+        accuracy = 0
+
 
 def compare_midi_files(midi_1_path, midi_2_path):
-
     # Load the MIDI files using the MIDIfile class
     midi_1 = MIDIfile(midi_1_path) # user played MIDI file
     midi_2 = MIDIfile(midi_2_path) # reference MIDI file
 
     # Get note intervals (pitch, start time, end time) from both MIDI files
-    intervals_1 = midi_1.get_note_intervals() # user played MIDI file
-    intervals_2 = midi_2.get_note_intervals() # reference MIDI file
+    intervals_1 = midi_1.note_intervals() # user played MIDI file
+    intervals_2 = midi_2.note_intervals() # reference MIDI file
 
     correct_notes = 0
     correct_notes_list = []
