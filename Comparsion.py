@@ -41,18 +41,24 @@ class MIDIfile:
 
             self.note_intervals[note_name].append((note.start, note.end))
 
-def generate_by_note_stat(midi_1_path, midi_2_path):
-    midi_1 = MIDIfile(midi_1_path)
-    midi_2 = MIDIfile(midi_2_path)
+def generate_by_note_stat(midi_ref_path, midi_user_path):
+    midi_ref = MIDIfile(midi_ref_path) # unpack the reference midi file
+    midi_user = MIDIfile(midi_user_path) # unpack the user midi file
  
 
-    intervals_1 = midi_1.note_intervals() # user played MIDI file
-    intervals_2 = midi_2.note_intervals() # reference MIDI file
+    intervals_ref = midi_ref.note_intervals() # reference midi intervals
+    intervals_user = midi_user.note_intervals() # user midi intervals
 
-    correct_notes = 0
-    correct_notes_list = []
-    missed_notes = 0
-    missed_notes_list = []
+    # dictionaires of correct notes and missed notes by pitchg
+    correct_notes = {}
+    missed_notes = {}
+
+    for pitch in intervals_ref:
+        correct_notes[pitch] = []
+        missed_notes[pitch] = []
+
+
+
     tolerance = 0.2  # Tolerance in seconds for timing deviation
 
     # Compare each note in the reference MIDI file to the user-played MIDI file
