@@ -4,7 +4,7 @@ import time
 from rpi_ws281x import PixelStrip, Color
 
 # Constants for LED strip
-LED_COUNT      = 60     # Number of LED pixels.
+LED_COUNT      = 100     # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
@@ -22,7 +22,7 @@ def midi_to_led_array(midi_file_path):
     led_array_left = []
     led_array_right = []
 
-    led_per_tick = 4 / midi.ticks_per_beat  # Number of LEDs per tick (assuming 16 LEDs per whole note)
+    led_per_tick = 6 / midi.ticks_per_beat  # Number of LEDs per tick (assuming 16 LEDs per whole note)
     current_time = 0  # Current time to track the total time elapsed
 
     for track in midi.tracks:
