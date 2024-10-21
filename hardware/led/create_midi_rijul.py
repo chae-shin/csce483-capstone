@@ -14,26 +14,30 @@ midi.addTimeSignature(track, time, 4, 2, 24, 8)
 
 # Note parameters
 channel = 0
-pitch = 69  # MIDI note number for A4
+pitch_a4 = 69  # MIDI note number for A4
+pitch_b4 = 71  # MIDI note number for B4
 volume = 100
 
 # Add a dummy test note at the start
 dummy_duration = 0.1  # Short duration for the dummy note
 dummy_volume = 10     # Low volume for the dummy note
-midi.addNote(track, channel, pitch, time, dummy_duration, dummy_volume)
+midi.addNote(track, channel, pitch_a4, time, dummy_duration, dummy_volume)
+midi.addNote(track, channel, pitch_b4, time, dummy_duration, dummy_volume)
 time += dummy_duration  # Move time forward by the duration of the dummy note
 
 # Add notes and rests with varying durations
 durations = [4, 2, 1, 0.5]  # Whole note, half note, quarter note, eighth note
 
 for duration in durations:
-    midi.addNote(track, channel, pitch, time, duration, volume)
+    midi.addNote(track, channel, pitch_a4, time, duration, volume)
+    midi.addNote(track, channel, pitch_b4, time, duration, volume)
     time += duration  # Move time forward by the duration of the note
     time += duration  # Move time forward by the duration of the rest
 
 # Add a dummy test note at the end
-midi.addNote(track, channel, pitch, time, dummy_duration, dummy_volume)
+midi.addNote(track, channel, pitch_a4, time, dummy_duration, dummy_volume)
+midi.addNote(track, channel, pitch_b4, time, dummy_duration, dummy_volume)
 
-# Write the MIDI data to a file
-with open("output_dummy_note.mid", "wb") as output_file:
+# Write the MIDI data to a file (TWO NOTES)
+with open("output_two_notes.mid", "wb") as output_file:
     midi.writeFile(output_file)
