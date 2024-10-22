@@ -2,6 +2,10 @@
 # Author: Olen Brown and Chaewon Shin
 
 import pretty_midi
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning) 
+import tkinter as tk
+from tkinter import messagebox
 
 # MIDI file custom class
 class MIDIfile:
@@ -14,9 +18,12 @@ class MIDIfile:
         # Initialize the MIDIfile by loading the MIDI data and extracting notes
         self.midi_data = pretty_midi.PrettyMIDI(midi_file_path)
         self.extracted_notes = self.extract_notes()
-
+        
+        self.total_intervals = 0  # Track total number of notes
+        
         self.note_intervals = {}
         self.get_note_intervals()
+
 
     def extract_notes(self):
         # Extract all notes from all instruments in the MIDI file
@@ -25,7 +32,7 @@ class MIDIfile:
             all_notes.extend(instrument.notes)
         # Sort all notes by their start time
         # sorted_notes = sorted(all_notes, key=lambda note: note.start)
-        # print(" *sorted_notes* \n", sorted_notes)
+        #print(" *sorted_notes* \n", sorted_notes)
         return all_notes
 
     def get_note_intervals(self):
@@ -40,112 +47,167 @@ class MIDIfile:
                 self.note_intervals[note_name] = []
 
             self.note_intervals[note_name].append((note.start, note.end))
+            self.total_intervals += 1  # Count each interval
+              
 
 def generate_by_note_stat(midi_ref_path, midi_user_path):
     midi_ref = MIDIfile(midi_ref_path) # unpack the reference midi file
     midi_user = MIDIfile(midi_user_path) # unpack the user midi file
  
 
-    intervals_ref = midi_ref.note_intervals() # reference midi intervals
-    intervals_user = midi_user.note_intervals() # user midi intervals
+    intervals_ref = midi_ref.note_intervals # reference midi intervals
+    intervals_user = midi_user.note_intervals # user midi intervals
 
-    # dictionaires of correct notes and missed notes by pitchg
+    # dictionaires of correct notes and missed notes by pitch
     correct_notes = {}
     missed_notes = {}
+    accuracy_notes = {}
 
+    # populate the dictionaries with the pitches of the reference song as keys
     for pitch in intervals_ref:
         correct_notes[pitch] = []
         missed_notes[pitch] = []
-
-
+        #accuracy_notes = -1
+        if pitch not in intervals_user:
+            intervals_user[pitch] = []
 
     tolerance = 0.2  # Tolerance in seconds for timing deviation
 
-    # Compare each note in the reference MIDI file to the user-played MIDI file
-    for pitch_2, start_2, end_2, note_name_2 in intervals_2:
-        matched = False
-        for pitch_1, start_1, end_1, note_name_1 in intervals_1:
-            # Check if the pitch matches, note name matches, and if both start and end times are within the tolerance
-            if (pitch_1 == pitch_2 and note_name_1 == note_name_2 and
-                    abs(start_1 - start_2) <= tolerance and abs(end_1 - end_2) <= tolerance):
-                correct_notes_list.append((pitch_1, start_1, end_1, note_name_1))
-                correct_notes += 1
-                matched = True
-                break
-        if not matched:
-            # If no match is found, add the note to the list of missed notes
-            missed_notes += 1
-            missed_notes_list.append((pitch_2, start_2, end_2, note_name_2))
+    for pitch in intervals_ref: # for every pitch in the reference song
+        ref = intervals_ref[pitch] # gets the list of intervals from the reference
+        user = intervals_user[pitch] # gets the list of intervals from the user
+        for ref_start, ref_end in ref: # check the overlap of notes in ref with notes in user
+            found = False
+            for user_start, user_end in user:
+                if abs(ref_start - user_start) <= tolerance and abs(ref_end - user_end) <= tolerance:
+                    correct_notes[pitch].append(ref)
+                    found = True
+                    break
+            if not found:
+                missed_notes[pitch].append(ref)
 
-    # Calculate the accuracy as a percentage
-    total_notes = len(intervals_2)  # Total number of notes in the reference MIDI file
-    if total_notes > 0:
-        accuracy = (correct_notes / total_notes) * 100
-    else:
-        accuracy = 0
-
-
-def compare_midi_files(midi_1_path, midi_2_path):
+    for pitch in intervals_ref:
+        correct_total = len(correct_notes[pitch])
+        missed_total = len(missed_notes[pitch])
+        if correct_total + missed_total == 0:
+            accuracy_notes[pitch] = 100
+        else:
+            accuracy_notes[pitch] = (correct_total / (correct_total + missed_total)) * 100
+    
+    return accuracy_notes
+    
+    
+def total_accuracy(midi_ref_path, midi_user_path):
     # Load the MIDI files using the MIDIfile class
-    midi_1 = MIDIfile(midi_1_path) # user played MIDI file
-    midi_2 = MIDIfile(midi_2_path) # reference MIDI file
+    midi_ref = MIDIfile(midi_ref_path)  # Reference MIDI file
+    midi_user = MIDIfile(midi_user_path) # User-played MIDI file
 
     # Get note intervals (pitch, start time, end time) from both MIDI files
-    intervals_1 = midi_1.note_intervals() # user played MIDI file
-    intervals_2 = midi_2.note_intervals() # reference MIDI file
+    intervals_ref = midi_ref.note_intervals  # Reference MIDI intervals 
+    intervals_user = midi_user.note_intervals # User-played MIDI intervals 
 
+    # Initialize counters and dictionaries
     correct_notes = 0
-    correct_notes_list = []
     missed_notes = 0
-    missed_notes_list = []
+    total_ref_notes = 0
     tolerance = 0.2  # Tolerance in seconds for timing deviation
 
-    # Compare each note in the reference MIDI file to the user-played MIDI file
-    for pitch_2, start_2, end_2, note_name_2 in intervals_2:
-        matched = False
-        for pitch_1, start_1, end_1, note_name_1 in intervals_1:
-            # Check if the pitch matches, note name matches, and if both start and end times are within the tolerance
-            if (pitch_1 == pitch_2 and note_name_1 == note_name_2 and
-                    abs(start_1 - start_2) <= tolerance and abs(end_1 - end_2) <= tolerance):
-                correct_notes_list.append((pitch_1, start_1, end_1, note_name_1))
-                correct_notes += 1
-                matched = True
-                break
-        if not matched:
-            # If no match is found, add the note to the list of missed notes
-            missed_notes += 1
-            missed_notes_list.append((pitch_2, start_2, end_2, note_name_2))
+    # Iterate over each note (pitch) in the reference MIDI intervals
+    for pitch in intervals_ref:
+        ref_intervals = intervals_ref[pitch]  # Reference intervals for this pitch
+        user_intervals = intervals_user.get(pitch, [])  # Get user intervals, default to empty if not found
+        total_ref_notes += len(ref_intervals)  # Total notes in the reference for accuracy calculation
 
-    # Calculate the accuracy as a percentage
-    total_notes = len(intervals_2)  # Total number of notes in the reference MIDI file
-    if total_notes > 0:
-        accuracy = (correct_notes / total_notes) * 100
+        for ref_start, ref_end in ref_intervals:
+            found = False
+            for user_start, user_end in user_intervals:
+                if (abs(ref_start - user_start) <= tolerance and abs(ref_end - user_end) <= tolerance):
+                    correct_notes += 1
+                    found = True
+                    break
+            if not found:
+                missed_notes += 1
+
+    # Calculate the total accuracy
+    if total_ref_notes > 0:
+        total_accuracy = (correct_notes / total_ref_notes) * 100
     else:
-        accuracy = 0
+        total_accuracy = 0
 
     # Print the performance results
-    print(f"Total notes: {total_notes}")
-    print(f"Accuracy: {accuracy:.2f}%")
+    print(f"Total reference intervals: {total_ref_notes}")
+    print(f"Correct intervals: {correct_notes}")
+    print(f"Missed intervals: {missed_notes}")
+    print(f"Total accuracy: {total_accuracy:.2f}%")
+    print("\n")
     
-    print(f"Correct notes: {correct_notes}")
-    if not correct_notes_list:
-        print("No Correct Notes!")
-    else:
-        # Print: the details of the correct notes
-        for pitch, start, end, note_name in correct_notes_list:
-            print(f"Pitch: {pitch}, Note: {note_name}, Start: {start:.2f}s, End: {end:.2f}s")
+    return total_accuracy
 
-    print(f"Missed notes: {missed_notes}")
-    if not missed_notes_list:
-        print("No Missed Notes!")
-    else:
-        # Print the details of the missed notes
-        for pitch, start, end, note_name in missed_notes_list:
-            print(f"Pitch: {pitch}, Note: {note_name}, Start: {start:.2f}s, End: {end:.2f}s")
 
-# Compare two different MIDI songs
+def print_MIDI_details(midi_ref_path, midi_user_path):
+    midi_ref = MIDIfile(midi_ref_path)  # Load reference MIDI
+    midi_user = MIDIfile(midi_user_path)  # Load user MIDI
+
+    # Get the list of pitch types from the reference and user files
+    reference_pitches = list(midi_ref.note_intervals.keys())
+    user_pitches = list(midi_user.note_intervals.keys())
+
+    # Print the number of unique pitches and their types for the reference file
+    print("[Reference file note details]")
+    print(f"**Total unique pitches in reference file: {len(reference_pitches)}")
+    print(f"**Pitches in reference file: {reference_pitches}")
+    for pitch, intervals in midi_ref.note_intervals.items():
+        print(f"Pitch: {pitch}, Intervals: {intervals}")
+    print(f"**Total intervals in reference file: {midi_ref.total_intervals}")
+
+    # Print the number of unique pitches and their types for the user file
+    print("\n[User file note details]")
+    print(f"**Total unique pitches in user file: {len(user_pitches)}")
+    print(f"**Pitches in user file: {user_pitches}")
+    for pitch, intervals in midi_user.note_intervals.items():
+        print(f"Pitch: {pitch}, Intervals: {intervals}")
+    print(f"**Total intervals in user file: {midi_user.total_intervals}")
+    print("\n")
+
+
+# Display accuracy stats in a pop-up window
+def display_results(midi_ref, midi_user, total_acc, accuracy_by_notes):
+    root = tk.Tk()
+    root.withdraw()
+
+    # Create a message with the accuracy stats
+    message = f"Reference MIDI file: {midi_ref}\n"
+    message += f"User MIDI file: {midi_user}\n\n"
+
+    message += f"Total Accuracy: {total_acc:.2f}%\n\n"
+
+    message += "Accuracy by Note (Pitch):\n"
+    for pitch, accuracy in accuracy_by_notes.items():
+        message += f"Pitch: {pitch}, Accuracy: {accuracy:.2f}%\n"
+    messagebox.showinfo("MIDI Accuracy Results", message)
+
+
 # Happy_Birthday_Easy_to_play.mid
 # Happy_Birthday_To_You_Piano.mid
 #compare_midi_files("Happy_Birthday_Easy_to_play.mid", "Happy_Birthday_To_You_Piano.mid") # user-played song, reference song
+# by_note_output
 
-midi = MIDIfile("Happy_Birthday_Easy_to_play.mid")
+# Name of MIDI files
+midi_reference = "Happy_Birthday_Easy_to_play.mid"
+#midi_reference = "user.mid"
+midi_user = "user.mid"
+
+# Print MIDI file Details (pitch, intervals)
+print_MIDI_details(midi_reference, midi_user)
+
+# Compare two different MIDI songs
+# Accuracy Stats
+total_acc = total_accuracy(midi_reference, midi_user)
+accuracy_by_notes = generate_by_note_stat(midi_reference, midi_user)
+# Print the accuracy for each note (pitch)
+print("Accuracy by Note (Pitch):")
+for pitch, accuracy in accuracy_by_notes.items():
+    print(f"Pitch: {pitch}, Accuracy: {accuracy:.2f}%")
+
+# Display the results in a pop-up window
+display_results(midi_reference, midi_user, total_acc, accuracy_by_notes)
