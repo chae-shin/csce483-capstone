@@ -1,3 +1,8 @@
+#####################################
+# Working with 2 sepeate midi files #
+#####################################
+
+
 import numpy as np
 from mido import MidiFile
 import time
@@ -85,8 +90,8 @@ def main():
     strip.begin()
 
     # Convert MIDI file to LED arrays for A4 and B4
-    led_array_a4 = midi_to_led_array("../midi_files/a_4.mid", 69, (0, 0, 255))  # A4 in blue
-    led_array_b4 = midi_to_led_array("../midi_files/b4.mid", 71, (255, 0, 0))  # B4 in red
+    led_array_a4 = midi_to_led_array("../midi_files/seperated_notes/note_A4.mid", 69, (0, 0, 255))  # A4 in blue
+    led_array_b4 = midi_to_led_array("../midi_files/seperated_notes/note_B4.mid", 71, (255, 0, 0))  # B4 in red
 
     # Print the LED arrays for debugging
     print("LED Array Length A4:", len(led_array_a4))
@@ -108,3 +113,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
