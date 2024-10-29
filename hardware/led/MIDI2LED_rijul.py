@@ -21,6 +21,7 @@ def midi_to_led_array(midi_file_path):
     note_on_times = {}  # Dictionary to track note_on times
 
     first_note_time = None
+    last_note_end_time = 0
 
     for track in midi.tracks:
         current_time = 0
@@ -35,8 +36,12 @@ def midi_to_led_array(midi_file_path):
                 if msg.note in note_on_times:
                     duration_ticks = current_time - note_on_times[msg.note]
                     duration_leds = int(duration_ticks * led_per_tick)
+                    if note_on_times[msg.note] > last_note_end_time:
+                        rest_ticks = note_on_times[msg.note] - last_note_end_time
+                        rest_leds = int(rest_ticks * led_per_tick)
+                        led_array.extend([(0, 0, 0)] * rest_leds)  # Off for rest
                     led_array.extend([(0, 0, 255)] * duration_leds)  # Blue for A4
-                    led_array.extend([(0, 0, 0)] * duration_leds)  # Off for rest
+                    last_note_end_time = current_time
                     print(f"Note Off: {msg}, Duration Ticks: {duration_ticks}, Duration LEDs: {duration_leds}")
                     del note_on_times[msg.note]
 
@@ -54,7 +59,7 @@ def main():
     strip.begin()
 
     # Convert MIDI file to LED array
-    led_array = midi_to_led_array("../midi_files/a4_whole_notes_rest.mid")
+    led_array = midi_to_led_array("../midi_files/a4_bizarre.mid")
 
     # Print the LED array for debugging
     print("LED Array Length:", len(led_array))
