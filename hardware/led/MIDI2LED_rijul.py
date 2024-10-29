@@ -1,3 +1,8 @@
+#######################################
+# Working one note midi to led python #
+#######################################
+
+
 import numpy as np
 from mido import MidiFile
 import time
@@ -45,10 +50,10 @@ def midi_to_led_array(midi_file_path):
                     print(f"Note Off: {msg}, Duration Ticks: {duration_ticks}, Duration LEDs: {duration_leds}")
                     del note_on_times[msg.note]
 
-    if first_note_time is not None:
-        initial_rest_ticks = first_note_time
-        initial_rest_leds = int(initial_rest_ticks * led_per_tick)
-        led_array = [(0, 0, 0)] * initial_rest_leds + led_array  # Add initial rest
+    # if first_note_time is not None:
+    #     initial_rest_ticks = first_note_time
+    #     initial_rest_leds = int(initial_rest_ticks * led_per_tick)
+    #     led_array = [(0, 0, 0)] * initial_rest_leds + led_array  # Add initial rest
 
     return led_array
 
@@ -90,3 +95,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
