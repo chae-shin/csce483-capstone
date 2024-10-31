@@ -210,4 +210,4 @@ for pitch, accuracy in accuracy_by_notes.items():
     print(f"Pitch: {pitch}, Accuracy: {accuracy:.2f}%")
 
 # Display the results in a pop-up window
-display_results(midi_reference, midi_user, total_acc, accuracy_by_notes)
+# display_results(midi_reference, midi_user, total_acc, accuracy_by_notes)
