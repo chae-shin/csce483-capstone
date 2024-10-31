@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Flask UI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+      background-color: #f0f0f0;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 22px;
+      color: green;
+    }
+    .scrollableTable {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to NotesArt</h1>
+  <form id="redirects" method="POST">
+    <button type="button" id="playSong">Play Song</button>
+    <button type="button" id="chooseSongButton">Choose song from library(dropdown?)</button>
+  </form>
+
+  <script>
+    document.getElementById("playSong").addEventListener("click", function() {
+      location.href = '/currentlyplaying';
+    });
+    document.getElementById("chooseSongButton").addEventListener("click", function() {
+      document.getElementById('redirects').submit();
+    });
+  </script>
+
+<div class="scrollableTable">
+  <table>
+    <thead>
+      <tr>
+        <th>Song Name</th>
+        <th>Duration</th>
+        <th>Difficulty</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for song in song_data %}
+      <tr>
+        <td>{{song.name}}</td>
+        <td>{{song.duration}}</td>
+        <td>{{song.difficulty}}</td>
+      </tr>
+      {% endfor %}
+      <!-- <tr>
+        <td>Data 4</td>
+        <td>Data 5</td>
+        <td>Data 6</td>
+      </tr> -->
+      <!-- Add more rows as needed -->
+    </tbody>
+  </table>
+</div>
+
+  <!-- {% if message %}
+  <div class="message">
+    {{ message }}
+  </div>
+  {% endif %} -->
+</body>
+</html>
