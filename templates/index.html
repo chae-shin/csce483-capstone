@@ -17,6 +17,11 @@
       margin: 10px;
       cursor: pointer;
     }
+    .songSelect{
+      background-color: blueviolet;
+      color:aquamarine;
+      
+    }
     .message {
       margin-top: 20px;
       font-size: 22px;
@@ -48,13 +53,36 @@
     <button type="button" id="chooseSongButton">Choose song from library(dropdown?)</button>
   </form>
 
+ 
   <script>
+    //coloring row of table
     document.getElementById("playSong").addEventListener("click", function() {
       location.href = '/currentlyplaying';
     });
     document.getElementById("chooseSongButton").addEventListener("click", function() {
       document.getElementById('redirects').submit();
     });
+
+    //playing specific midi file
+    document.getElementById("playSong").addEventListener("click", function() {
+    fetch('/play_song', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        alert(data.message); // Show success message
+      } else {
+        alert("Error: " + data.message); // Show error message
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+
   </script>
 
 <div class="scrollableTable">
@@ -68,8 +96,8 @@
     </thead>
     <tbody>
       {% for song in song_data %}
-      <tr>
-        <td>{{song.name}}</td>
+      <tr class="SongRow">
+        <td>{{loop.index}} {{song.name}}</td>
         <td>{{song.duration}}</td>
         <td>{{song.difficulty}}</td>
       </tr>
@@ -83,6 +111,17 @@
     </tbody>
   </table>
 </div>
+
+<script>
+  document.querySelectorAll('.SongRow').forEach(row => {
+      row.addEventListener('click', function() {
+        // Remove 'selected' class from all rows
+        document.querySelectorAll('.SongRow').forEach(r => r.classList.remove('songSelect'));
+        // Add 'selected' class to the clicked row
+        this.classList.add('songSelect');
+      });
+    });
+</script>
 
   <!-- {% if message %}
   <div class="message">
