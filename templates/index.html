@@ -96,31 +96,55 @@
     </thead>
     <tbody>
       {% for song in song_data %}
-      <tr class="SongRow">
-        <td>{{loop.index}} {{song.name}}</td>
-        <td>{{song.duration}}</td>
-        <td>{{song.difficulty}}</td>
+      <tr class="SongRow" data-index="{{ loop.index }}">
+        <td>{{ loop.index }} {{ song.name }}</td>
+        <td>{{ song.duration }}</td>
+        <td>{{ song.difficulty }}</td>
       </tr>
       {% endfor %}
-      <!-- <tr>
-        <td>Data 4</td>
-        <td>Data 5</td>
-        <td>Data 6</td>
-      </tr> -->
-      <!-- Add more rows as needed -->
     </tbody>
   </table>
 </div>
 
 <script>
   document.querySelectorAll('.SongRow').forEach(row => {
-      row.addEventListener('click', function() {
-        // Remove 'selected' class from all rows
-        document.querySelectorAll('.SongRow').forEach(r => r.classList.remove('songSelect'));
-        // Add 'selected' class to the clicked row
-        this.classList.add('songSelect');
-      });
+    row.addEventListener('click', function() {
+      // Remove 'selected' class from all rows
+      document.querySelectorAll('.SongRow').forEach(r => r.classList.remove('songSelect'));
+      
+      // Add 'selected' class to the clicked row
+      this.classList.add('songSelect');
+      
+      // Set the selected song index
+      selectedSongIndex = this.getAttribute('data-index');
     });
+  });
+
+    let selectedSongIndex = null;
+
+    document.getElementById("playSong").addEventListener("click", function() {
+    if (selectedSongIndex) {
+      fetch('/play_song', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ song_index: selectedSongIndex })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          alert(data.message); // Show success message
+        } else {
+          alert("Error: " + data.message); // Show error message
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    } else {
+      alert("Please select a song first.");
+    }
+  });
+  
 </script>
 
   <!-- {% if message %}
