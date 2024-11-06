@@ -1,14 +1,46 @@
+# from rpi_ws281x import PixelStrip, Color
+# import time
+
+# # LED strip configuration:
+# LED_COUNT      = 2000      # Number of LED pixels.
+# LED_PIN        = 18       # GPIO pin connected to the pixels (must support PWM!).
+# LED_FREQ_HZ    = 800000   # LED signal frequency in hertz (usually 800khz)
+# LED_DMA        = 10       # DMA channel to use for generating signal (try 10)
+# LED_BRIGHTNESS = 50      # Set to 0 for darkest and 255 for brightest
+# LED_INVERT     = False    # True to invert the signal (when using NPN transistor level shift)
+# LED_CHANNEL    = 0
+
+# def main():
+#     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+#     strip.begin()
+#     color = Color(255, 0, 0)  # Red color
+
+#     for i in range(LED_COUNT):
+#         strip.setPixelColor(i, color)
+#     strip.show()
+
+#     time.sleep(10)  # Keep the LEDs on for 10 seconds
+
+#     # Clear the strip
+#     for i in range(LED_COUNT):
+#         strip.setPixelColor(i, Color(0, 0, 0))
+#     strip.show()
+
+# if __name__ == "__main__":
+#     main()
+
+
 import numpy as np
 from mido import MidiFile
 import time
 from rpi_ws281x import PixelStrip, Color
 
 # Constants for LED strip
-LED_COUNT      = 500     # Total number of LEDs (10 notes * 50 LEDs per note)
+LED_COUNT      = 1800    # Total number of LEDs (36 notes * 50 LEDs per note)
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!)
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800kHz)
 LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 150     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # Set to 1 for GPIOs 13, 19, 41, 45 or 53
 
@@ -79,23 +111,44 @@ def main():
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
 
-    # Define notes for C1 to A1 (10 notes)
-    notes = list(range(24, 34))  # MIDI notes from C1 (24) to A1 (33)
+    # Define notes for C2 to B4 (36 notes)
+    notes = list(range(36, 72))  # MIDI notes from C2 (36) to B4 (71)
 
-    # Identify white and black keys
-    white_keys = [24, 26, 28, 29, 31, 33]
-    black_keys = [25, 27, 30, 32]
+    # Identify white and black keys for each octave
+    # Octave 2 (C2 to B2)
+    white_keys_octave2 = [36, 38, 40, 41, 43, 45, 47]
+    black_keys_octave2 = [37, 39, 42, 44, 46]
+
+    # Octave 3 (C3 to B3)
+    white_keys_octave3 = [48, 50, 52, 53, 55, 57, 59]
+    black_keys_octave3 = [49, 51, 54, 56, 58]
+
+    # Octave 4 (C4 to B4)
+    white_keys_octave4 = [60, 62, 64, 65, 67, 69, 71]
+    black_keys_octave4 = [61, 63, 66, 68, 70]
 
     colors = []
     alt_colors = []
 
     for note in notes:
-        if note in white_keys:
-            colors.append((255, 0, 0))      # Base red for white keys
-            alt_colors.append((0, 0, 255))  # Blue for alternation
-        elif note in black_keys:
-            colors.append((128, 0, 128))    # Base purple for black keys
-            alt_colors.append((0, 255, 0))  # Green for alternation
+        if note in white_keys_octave2:
+            colors.append((255, 0, 0))      # Base red for octave 2 white keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in black_keys_octave2:
+            colors.append((153, 0, 153))    # Base purple for octave 2 black keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in white_keys_octave3:
+            colors.append((0, 255, 0))      # Base green for octave 3 white keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in black_keys_octave3:
+            colors.append((153, 0, 153))    # Base purple for octave 2 black keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in white_keys_octave4:
+            colors.append((0, 0, 255))    # Base blue for octave 4 white keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in black_keys_octave4:
+            colors.append((153, 0, 153))    # Base purple for octave 2 black keys
+            alt_colors.append((255, 255, 255))  # White for alternation
         else:
             colors.append((0, 0, 0))        # Default to black if note is not identified
             alt_colors.append((0, 0, 0))
@@ -105,7 +158,7 @@ def main():
     print("Alt Colors:", alt_colors)
 
     # Convert MIDI file to LED arrays for the notes
-    midi_file_path = "../midi_files/hot_cross_buns.mid"  # Replace with your MIDI file path
+    midi_file_path = "../midi_files/mary_right_hand.mid"  # Replace with your MIDI file path
     led_arrays = midi_to_led_arrays(midi_file_path, notes, colors, alt_colors)
 
     # Print the LED arrays for debugging
@@ -129,7 +182,7 @@ def main():
     # Find the maximum length among all led_arrays
     max_length = max(len(led_arrays[note]) for note in notes) + leds_per_note
 
-    frame_duration = 0.1  # Desired frame duration in seconds
+    frame_duration = 0.2  # Desired frame duration in seconds
 
     for i in range(max_length):
         start_time = time.time()
@@ -182,3 +235,4 @@ def clear_strip(strip):
 
 if __name__ == "__main__":
     main()
+
