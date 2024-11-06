@@ -89,6 +89,7 @@
   <table>
     <thead>
       <tr>
+        <th> </th>
         <th>Song Name</th>
         <th>Duration</th>
         <th>Difficulty</th>
@@ -97,8 +98,9 @@
     <tbody>
       {% for song in song_data %}
       <tr class="SongRow">
-        <td>{{loop.index}} {{song.name}}</td>
-        <td>{{song.duration}}</td>
+        <td>{{loop.index}}</td>
+        <td>{{song.name}}</td>
+        <td>{{song.duration}} seconds</td>
         <td>{{song.difficulty}}</td>
       </tr>
       {% endfor %}
