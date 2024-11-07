@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from songFilePickStats import song_data
 import subprocess
 import os
+import diddy
 
 app = Flask(__name__)
 
@@ -47,9 +48,18 @@ def play_song():
         song_file = song_index # Adjust file path as needed
         print(song_file)
         subprocess.run(["python3", "RunningLights.py", song_file], check=True)
+        take_input()
         return jsonify({"status": "success", "message": f"Playing song at index {song_index}!"})
     except subprocess.CalledProcessError as e:
         return jsonify({"status": "error", "message": f"Error playing song: {str(e)}"}), 500
+
+
+def take_input():
+    try:
+        subprocess.run(["python3", "diddy.py"], check=True)
+        return "taking user input"
+    except subprocess.CalledProcessError as e:
+        return "error: "+e
 
 @app.route("/currentlyplaying")
 def playing():
