@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     data = song_data()
-    return render_template("index.html", song_data=data)    
+    return render_template("index.html", song_data=data) 
 
 @app.route("/play_song", methods=["POST"])
 def play_song():
