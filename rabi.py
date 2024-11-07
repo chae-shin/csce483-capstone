@@ -17,6 +17,13 @@ def play_song():
 
     try:
         # Run the specific Python file based on the song index
+        
+        # create a dictionary of songs:
+        #   song_name :
+        #   song_duration : 
+        #   song_filepath : 
+        #   song_difficulty :
+
         song_file = f"./midiFiles/{song_index}_MIDI.py"  # Adjust file path as needed
         print(song_file)
         subprocess.run(["python3", song_file], check=True)
