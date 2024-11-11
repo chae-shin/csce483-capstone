@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from songFilePickStats import song_data
 import subprocess
 import os
+import diddy
 
 app = Flask(__name__)
 
@@ -40,10 +41,28 @@ def play_song():
         # Run the specific Python file based on the song index
         song_file = song_index  # Adjust file path as needed
         print(song_file)
-        subprocess.run(["python3", "RunningLights.py", song_file], check=True)
+        # subprocess.run(["python3", "RunningLights.py", song_file], check=True)
+        # subprocess.run(["python3", "diddy.py", song_file], check=True)
+        
+        # Popen should run the processes in parallel
+        subprocess.Popen(["python3", "RunningLights.py", song_file])
+        subprocess.Popen(["python3", "diddy.py", song_file])
+        
+        # Optionally, wait for both processes to complete if needed
+        process1.wait()
+        process2.wait()
+
         return jsonify({"status": "success", "message": f"Playing song {song_index}!"})
     except subprocess.CalledProcessError as e:
         return jsonify({"status": "error", "message": f"Error playing song: {str(e)}"}), 500
+
+
+def take_input():
+    try:
+        subprocess.run(["python3", "diddy.py"], check=True)
+        return "taking user input"
+    except subprocess.CalledProcessError as e:
+        return "error: "+e
 
 @app.route("/currentlyplaying")
 def playing():
