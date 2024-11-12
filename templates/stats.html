@@ -3,8 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Currently Playing</title>
+    <title>View Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .total-accuracy {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .progress-bar-container {
+            width: 60%;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 0 auto;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #e74c3c;
+            text-align: center;
+            color: black;
+            font-weight: bold;
+            line-height: 30px;
+            transition: width 0.3s ease-in-out;
+            border-radius: 15px;
+        }
+
+        .label-container {
+            width: 60%;
+            margin: 10px auto 0 auto;
+            display: flex;
+            justify-content: space-between;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .accuracy-section {
+            margin-top: 30px;
+        }
+
+        .accuracy-table-wrapper {
+            overflow-y: auto;
+            max-height: 500px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .accuracy-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover td {
+            background-color: #ecf0f1;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        #BacktoHome {
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        #BacktoHome:hover {
+            background-color: #27ae60;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+
+            h1, h2 {
+                font-size: 1.2em;
+            }
+
+            .accuracy-table {
+                width: 90%;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Stats:</p>
+    <div class="container">
+        <h1>Stat Results</h1>
+        <h2>Song Played: {{song_data}}</h2>
+
+        <!-- Total Accuracy -->
+        <div class="total-accuracy">
+            <h2>Total Accuracy: {{total_accuracy}}%</h2>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="accuracyProgressBar">{{total_accuracy}}%</div>
+        </div>
+        <div class="label-container">
+            <span>Low</span>
+            <span>Medium</span>
+            <span>High</span>
+        </div>
+
+        <!-- Accuracy by Note (Pitch) Table -->
+        <div class="accuracy-section">
+            <h2>Accuracy by Note (Pitch):</h2>
+            <div class="accuracy-table-wrapper">
+                <table class="accuracy-table">
+                    <thead>
+                        <tr>
+                            <th>Note #</th>
+                            <th>Pitch</th>
+                            <th>Accuracy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pitch, accuracy in accuracy_by_notes.items() %}
+                            <tr class="NoteRow">
+                                <td>{{loop.index}}</td>
+                                <td>{{pitch}}</td>
+                                <td>{{"{:.2f}".format(accuracy)}}%</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Button for going back to main menu -->
+        <div class="button-container">
+            <button id="BacktoHome" onclick="backtohome()">Back To Menu</button>
+        </div>
+    </div>
+
+    <script>
+        function backtohome() {
+            // redirect to index.html
+            window.location.href = "/"; 
+        }
+
+        // Set the progress bar based on total accuracy
+        const totalAccuracy = parseInt("{{ total_accuracy }}", 10); // const totalAccuracy = {{total_accuracy}};
+        const progressBar = document.getElementById('accuracyProgressBar');
+        progressBar.style.width = `${totalAccuracy}%`;
+
+        // Set color based on accuracy range (low, medium, high)
+        if (totalAccuracy < 50) {
+            progressBar.style.backgroundColor = '#e74c3c'; // Red for low
+        } 
+        else if (totalAccuracy < 80) {
+            progressBar.style.backgroundColor = '#f1c40f'; // Yellow for medium
+        } 
+        else {
+            progressBar.style.backgroundColor = '#2ecc71'; // Green for high
+        }
+    </script>
 </body>
+</html>

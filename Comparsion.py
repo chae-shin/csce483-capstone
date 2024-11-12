@@ -143,7 +143,7 @@ def total_accuracy(midi_ref_path, midi_user_path):
     print("\n")
     """
     
-    return total_accuracy
+    return f"{total_accuracy:.2f}"
 
 
 def print_MIDI_details(midi_ref_path, midi_user_path):
@@ -193,7 +193,7 @@ def display_results(midi_ref, midi_user, total_acc, accuracy_by_notes):
 # Happy_Birthday_To_You_Piano.mid
 #compare_midi_files("Happy_Birthday_Easy_to_play.mid", "Happy_Birthday_To_You_Piano.mid") # user-played song, reference song
 # by_note_output
-
+'''
 # Name of MIDI files
 midi_reference = "Happy_Birthday_Easy_to_play.mid"
 #midi_reference = "user.mid"
@@ -214,3 +214,4 @@ for pitch, accuracy in accuracy_by_notes.items():
 """
 # Display the results in a pop-up window
 # display_results(midi_reference, midi_user, total_acc, accuracy_by_notes)
+'''
