@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, jsonify
-from songFilePickStats import song_data
+from src.software.UI.songFilePickStats import song_data
 import subprocess
 import os
-import diddy
-from Comparsion import total_accuracy, generate_by_note_stat
+import src.software.user_input.piano_to_midi as piano_to_midi
+from src.software.comparison.Comparsion import total_accuracy, generate_by_note_stat
 
 app = Flask(__name__)
 
