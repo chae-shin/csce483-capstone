@@ -28,7 +28,7 @@
 #     turn_on_all_leds(strip, color)
 
 #     # Keep the LEDs on for 10 seconds
-#     time.sleep(10)
+#     time.sleep(20)
 
 #     # Clear the strip
 #     turn_on_all_leds(strip, Color(0, 0, 0))
@@ -114,7 +114,7 @@ def run_midi_visualization(strip):
             alt_colors.append((0, 0, 0))
 
     # Convert MIDI file to LED arrays for the notes
-    midi_file_path = "../midi_files/mary_right_hand.mid"  # Replace with your MIDI file path
+    midi_file_path = "/home/capstone/csce483-capstone/songs/mary_right_hand.mid"
     led_arrays = midi_to_led_arrays(midi_file_path, notes, colors, alt_colors)
 
     # Each note gets 50 LEDs
@@ -132,7 +132,7 @@ def run_midi_visualization(strip):
     # Find the maximum length among all led_arrays
     max_length = max(len(led_arrays[note]) for note in notes) + leds_per_note
 
-    frame_duration = 0.25  # Desired frame duration in seconds
+    frame_duration = 0.01  # Desired frame duration in seconds
 
     for i in range(max_length):
         start_time = time.time()

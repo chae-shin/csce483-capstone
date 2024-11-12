@@ -165,6 +165,8 @@
     // Adjust the playSong click handler
     document.getElementById("playSong").addEventListener("click", function() {
       if (selectedSongIndex) {
+        location.href = '/currentlyplaying'; // Redirect to the playing page
+        
         fetch('/play_song', {
           method: 'POST',
           headers: {
@@ -174,9 +176,7 @@
         })
         .then(response => response.json())
         .then(data => {
-          if (data.status === "success") {
-            location.href = '/currentlyplaying'; // Redirect to the playing page
-          } else {
+          if (data.status !== "success") {
             alert("Error: " + data.message); // Show error message
           }
         })

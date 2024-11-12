@@ -31,7 +31,7 @@ def listen_to_midi(input_port):
 
             if str(msg.type) == 'note_on' and int(msg.velocity) > 0:  # Note On (key pressed)
                 if start_time is None:
-                    start_time = time.time()  # Record start time for the song
+                    start_time = time.time()-ime  # Record start time for the song
                 note_times[int(msg.note)-36] = time.time()  # Record start time for the note
                 print(f"Note {int(msg.note)-36} started")
                 noteTime = time.time() - ime
@@ -42,7 +42,7 @@ def listen_to_midi(input_port):
                     duration = time.time() - note_times[int(msg.note)-36]  # Calculate duration
                     print(f"Note {int(msg.note)-36} ended, duration: {duration:.3f} seconds")
                     del note_times[int(msg.note)-36]  # Remove the note from the dictionary
-                    end_time = time.time()
+                    end_time = time.time()-ime
                     # print("NEEE:",msg.note)
                     note = pretty_midi.Note(velocity=80, pitch=(msg.note), start=end_time-duration, end=end_time)
                     piano.notes.append(note)
@@ -53,7 +53,7 @@ def listen_to_midi(input_port):
 
 # Function to start listening in a separate thread
 def start_listening():
-    with mido.open_input('USB MIDI Interface 0') as input_port:
+    with mido.open_input('USB MIDI Interface:USB MIDI Interface MIDI 1 28:0') as input_port:
         listen_to_midi(input_port)
 
 # Start the listening thread
@@ -73,4 +73,4 @@ except KeyboardInterrupt:
         total_duration = end_time - start_time
         print(f"Total song duration: {total_duration:.3f} seconds")
         userSong.instruments.append(piano)
-        userSong.write('user.mid')
+        userSong.write('UserInputRecorded/user.mid')
