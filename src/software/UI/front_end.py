@@ -1,13 +1,22 @@
 from flask import Flask, render_template, request, jsonify
-from src.software.UI.songFilePickStats import song_data
+from songFilePickStats import song_data
 import subprocess
+import sys
 import os
-import src.software.user_input.piano_to_midi as piano_to_midi
-from src.software.comparison.Comparsion import total_accuracy, generate_by_note_stat
+# sys.path.append(os.path.abspath("../user_input"))
+# import src.software.user_input.piano_to_midi as piano_to_midi
+
+
+sys.path.append(os.path.abspath("../comparison"))
+# print(sys.path)
+
+from Comparison import total_accuracy, generate_by_note_stat
+
+
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'songs/'
+UPLOAD_FOLDER = '../../../songs/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -46,12 +55,12 @@ def play_song():
         # Run the specific Python file based on the song index
         song_file = song_index  # Adjust file path as needed
         print(song_file)
-        subprocess.run(["python3", "RunningLights.py", song_file], check=True)
-        subprocess.run(["python3", "diddy.py", song_file], check=True)
+        # subprocess.run(["python3", "RunningLights.py", song_file], check=True)
+        # subprocess.run(["python3", "diddy.py", song_file], check=True)
         
         # Popen should run the processes in parallel
-        # subprocess.Popen(["python3", "RunningLights.py", song_file])
-        # subprocess.Popen(["python3", "diddy.py", song_file])
+        subprocess.Popen(["sudo","python3", "../../hardware/midi_to_led_array.py", song_file])
+        # subprocess.Popen(["python3", "../user_input/piano_to_midi.py", song_file])
         
         # Optionally, wait for both processes to complete if needed
         # process1.wait()
@@ -62,12 +71,12 @@ def play_song():
         return jsonify({"status": "error", "message": f"Error playing song: {str(e)}"}), 500
 
 
-def take_input():
-    try:
-        subprocess.run(["python3", "diddy.py"], check=True)
-        return "taking user input"
-    except subprocess.CalledProcessError as e:
-        return "error: "+e
+# def take_input():
+#     try:
+#         subprocess.run(["python3", "diddy.py"], check=True)
+#         return "taking user input"
+#     except subprocess.CalledProcessError as e:
+#         return "error: "+e
 
 @app.route("/currentlyplaying")
 def playing():
@@ -79,7 +88,7 @@ def stats():
 
     # Name of MIDI files
     midi_reference = song_file
-    midi_user = "user.mid"
+    midi_user = "../UserInputRecorded/user.mid"
     print("midi_reference: ", midi_reference)
     
     # Calculate total accuracy and accuracy by notes
