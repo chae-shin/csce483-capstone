@@ -1,0 +1,54 @@
+General Idea:
+    When we look at a MIDI file, we are given time intervals and the name of the notes
+    The hardware implementation of the LED display will be a series of strips for every
+        key on the piano, for each strip, a series of addresses on the PWM light strip
+        are what we associate with lighting up that key
+
+    My refactor idea would, now that we know how to interact with the light strip and the libraries
+        involved, it would store the adresses for each key in an easy way to look up by pitch
+        and it would store the intervals of the MIDI files in an easy way to look up by pitch.
+        That way, as long as our timing it good, we only deal with updating the top row of LEDs
+        and the notes themselves just trickle down until they hit the last LED, which is when the 
+        user is suppossed to play the note
+
+Details:
+
+The MIDI file is parsed into a dictionary
+    The dictionary key is the name of each pitch i.e. C4
+    Each key entry is a queue of objects representing the notes being played
+
+    The object will contain the start and end interval as specified in the MIDI file
+        and be sorted into the respective entry in the dictionary along with the name of the note
+        and the color we want the note to light up as
+        A note *should* never have overlapping intervals with itself
+
+The LED address data is stored in a dictionary
+    The dictionary key is the name of each pitch i.e. C4
+    Each key entry is an ordered list of which adresses apply to that note
+        on the keyboard from top to bottom i.e. [8, 7, 6, 5] or [1, 2, 3, 4]
+        This alleviates some of the issues with the orientation of the actual LED strips
+        When we need to update the LED display, for each tick we can progress
+            down the ordered list to see the next pin
+
+    This allows us to treat every note strip as if they were all oriented top to bottom
+        instead of counting up in addresses for some and down in addresses for others
+
+Globally a timer will keep track of how far into the song we are
+    We can tune the tick rate to speed up or slow down songs based on the bpm
+    This will also give us an offset value, because we would know how long it
+        takes for a note to trickle down from top to bottom
+
+The actual main loop will go through the dictionary of "notes played" objects that 
+    was parsed from the MIDI file, we can peek the top object on each queue
+    When we peek, if the current timer for the song has us within the interval
+        in the object given our time offset, and somehow add it to an update list of LEDs
+
+    When we update the LED display, each tick will correspond to one complete shift down a row
+        so like tick one has an LED lit on the top row, on tick two that second row will be lit
+        and so on
+
+        So on the actual tick command, we would need to keep track of what the current state of
+            all the LEDs are and progress down each one for the notes
+
+        What data structure could we use to keep account of each LED status?
+            Make the key strips their own objects? boolean variable for each address in its list
