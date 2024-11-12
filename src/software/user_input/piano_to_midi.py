@@ -25,7 +25,7 @@ def listen_to_midi(input_port):
             if str(msg.type) == "clock":
                 continue  # Skip processing if clock time is 0
 
-            print(f"Note: {msg.note}" if hasattr(msg, 'note') else "No Note")
+            print(f"Note: {pretty_midi.note_number_to_name(msg.note)}" if hasattr(msg, 'note') else "No Note")
             print(f"Velocity: {msg.velocity}" if hasattr(msg, 'velocity') else "No Velocity")
             print("-" * 20)
 

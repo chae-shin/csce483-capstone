@@ -110,7 +110,7 @@ def total_accuracy(midi_ref_path, midi_user_path):
     correct_notes = 0
     missed_notes = 0
     total_ref_notes = 0
-    tolerance = 0.2  # Tolerance in seconds for timing deviation
+    tolerance = 10  # Tolerance in seconds for timing deviation10
 
     # Iterate over each note (pitch) in the reference MIDI intervals
     for pitch in intervals_ref:
