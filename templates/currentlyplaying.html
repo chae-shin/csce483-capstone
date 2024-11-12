@@ -20,6 +20,16 @@
             line-height: 30px;
             color: rgb(0, 0, 0);
         }
+        #viewResultsBtn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -27,6 +37,8 @@
     <div class="progress-container">
         <div class="progress-bar" id="progressBar">0%</div>
     </div>
+    <!-- View Results Button will appear after song duration completes -->
+    <button id="viewResultsBtn" onclick="viewResults()">View Results</button>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var progressBar = document.getElementById("progressBar");
@@ -37,6 +49,7 @@
             function updateProgressBar() {
                 if (width >= 100) {
                     clearInterval(progressInterval);
+                    viewResultsBtn.style.display = 'block'; // Show the "View Results" button after the progress completes
                 } else {
                     width++;
                     var elapsedSeconds = (width / 100) * duration;
@@ -47,6 +60,11 @@
 
             var progressInterval = setInterval(updateProgressBar, interval);
         });
+
+        function viewResults() {
+            // Redirect to stats.html
+            window.location.href = "/stats";
+        }
     </script>
 </body>
 </html>

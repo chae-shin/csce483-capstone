@@ -3,12 +3,16 @@ from songFilePickStats import song_data
 import subprocess
 import os
 import diddy
+from Comparsion import total_accuracy, generate_by_note_stat
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'songs/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Define song_file (song name)
+song_file = None
 
 @app.route("/")
 def home():
@@ -34,6 +38,7 @@ def get_songs():
 
 @app.route("/play_song", methods=["POST"])
 def play_song():
+    global song_file
     data = request.get_json()
     song_index = data.get("song_name")
 
@@ -70,7 +75,17 @@ def playing():
 
 @app.route("/stats")
 def stats():
-    return render_template("stats.html")
+    global song_file
+
+    # Name of MIDI files
+    midi_reference = song_file
+    midi_user = "user.mid"
+    print("midi_reference: ", midi_reference)
+    
+    # Calculate total accuracy and accuracy by notes
+    total_acc = total_accuracy(midi_reference, midi_user)
+    acc_by_notes = generate_by_note_stat(midi_reference, midi_user)
+    return render_template("stats.html", song_data=song_file, total_accuracy=total_acc, accuracy_by_notes=acc_by_notes)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -135,13 +135,15 @@ def total_accuracy(midi_ref_path, midi_user_path):
         total_accuracy = 0
 
     # Print the performance results
+    """
     print(f"Total reference intervals: {total_ref_notes}")
     print(f"Correct intervals: {correct_notes}")
     print(f"Missed intervals: {missed_notes}")
     print(f"Total accuracy: {total_accuracy:.2f}%")
     print("\n")
+    """
     
-    return total_accuracy
+    return f"{total_accuracy:.2f}"
 
 
 def print_MIDI_details(midi_ref_path, midi_user_path):
@@ -191,23 +193,25 @@ def display_results(midi_ref, midi_user, total_acc, accuracy_by_notes):
 # Happy_Birthday_To_You_Piano.mid
 #compare_midi_files("Happy_Birthday_Easy_to_play.mid", "Happy_Birthday_To_You_Piano.mid") # user-played song, reference song
 # by_note_output
-
+'''
 # Name of MIDI files
 midi_reference = "Happy_Birthday_Easy_to_play.mid"
 #midi_reference = "user.mid"
 midi_user = "user.mid"
 
 # Print MIDI file Details (pitch, intervals)
-print_MIDI_details(midi_reference, midi_user)
+#print_MIDI_details(midi_reference, midi_user)
 
 # Compare two different MIDI songs
 # Accuracy Stats
 total_acc = total_accuracy(midi_reference, midi_user)
 accuracy_by_notes = generate_by_note_stat(midi_reference, midi_user)
 # Print the accuracy for each note (pitch)
+"""
 print("Accuracy by Note (Pitch):")
 for pitch, accuracy in accuracy_by_notes.items():
     print(f"Pitch: {pitch}, Accuracy: {accuracy:.2f}%")
-
+"""
 # Display the results in a pop-up window
 # display_results(midi_reference, midi_user, total_acc, accuracy_by_notes)
+'''
