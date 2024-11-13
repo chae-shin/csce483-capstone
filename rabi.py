@@ -5,7 +5,7 @@ import os
 import src.software.user_input.piano_to_midi as piano_to_midi
 from src.software.comparison.Comparison import total_accuracy, generate_by_note_stat
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='src/software/UI/templates')
 
 UPLOAD_FOLDER = 'songs/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
@@ -45,7 +45,7 @@ def play_song():
     try:
         # Run the specific Python file based on the song index
         song_file = song_index  # Adjust file path as needed
-        print(song_file)
+
         subprocess.run(["python3", "RunningLights.py", song_file], check=True)
         subprocess.run(["python3", "diddy.py", song_file], check=True)
         
@@ -78,9 +78,10 @@ def stats():
     global song_file
 
     # Name of MIDI files
-    midi_reference = song_file
-    midi_user = "user.mid"
+    midi_reference = "songs/"+str(song_file)
+    midi_user = "src/software/UI/UserInputRecorded/user.mid"
     print("midi_reference: ", midi_reference)
+    print("midi_user: ", midi_user)
     
     # Calculate total accuracy and accuracy by notes
     total_acc = total_accuracy(midi_reference, midi_user)
