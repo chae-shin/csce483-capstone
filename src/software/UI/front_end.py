@@ -20,6 +20,7 @@ from Comparison import total_accuracy, generate_by_note_stat
 app = Flask(__name__)
 
 UPLOAD_FOLDER = '../../../songs/'
+#UPLOAD_FOLDER = 'songs/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -91,6 +92,7 @@ def playing():
     # print(song_duration)
     # print(type(song_duration))
     midi_data = pretty_midi.PrettyMIDI('../../../songs/'+song_name)
+    #midi_data = pretty_midi.PrettyMIDI('songs/'+song_name)
     duration = (midi_data.get_end_time())
     return render_template("currentlyplaying.html",song_name=song_name,song_duration=duration)
 
@@ -100,6 +102,7 @@ def stats():
     import string
     # Name of MIDI files
     midi_reference = "../../../songs/"+str(song_file)
+    #midi_reference = "songs/"+str(song_file)
     midi_user = "UserInputRecorded/user.mid"
     print("midi_reference: ", midi_reference)
     
