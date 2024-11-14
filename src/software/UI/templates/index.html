@@ -3,66 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Flask UI</title>
+  <title>NotesArt</title>
+  
+  <!-- Fonts: Galindo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Bangers&family=Boogaloo&family=Galindo&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <!-- Fonts: DynaPuff -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Black+Ops+One&family=Chakra+Petch:wght@400;600&family=DynaPuff:wght@400..700&family=Gloria+Hallelujah&family=Josefin+Sans:ital,wght@0,400;1,600&family=Pacifico&family=Permanent+Marker&family=Press+Start+2P&family=Roboto+Mono:ital,wght@1,600&family=Titillium+Web:ital,wght@1,200&family=Yellowtail&display=swap" rel="stylesheet">
+  
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Galindo", sans-serif;
       text-align: center;
       padding-top: 50px;
-      background-color: #f0f0f0;
+      background: url('static/piano.jpg') no-repeat center center fixed; 
+      background-size: cover;
+      position: relative;
+      color: #ffffff;
     }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); 
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 3.0em;
+      margin-bottom: 20px;
+      color: #ffde7d;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
     button {
       padding: 15px 30px;
-      font-size: 18px;
+      font-family: "DynaPuff", system-ui;
+      font-size: 20px;
       margin: 10px;
       cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      transition: background-color 0.3s;
+      width: 200px;
+      height: 53px;
     }
-    .songSelect{
-      background-color: blueviolet;
-      color:aquamarine;
-      
+
+    /* Play Song button */
+    #playSong {  
+      background-color: #b17a02;
+      color: #f9f579; 
+      margin-left: 110px;
     }
+    #playSong:hover {
+      background: #fec65b; 
+      color: #6d3b2c;
+    }
+
+    /* Upload Files button */
+    #uploadButton { 
+      font-family: "DynaPuff", system-ui;
+      background-color: #b17a02; 
+      color: #f6f8ed;
+      padding: 15px 30px;
+      font-size: 20px;
+      margin: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      transition: background-color 0.3s;
+      width: 200px;
+      height: 50px;
+    }
+    #uploadButton:hover {
+      background: #fec65b; 
+      color: #292929;
+    }
+
+    /* Add Song button */
+    #linkSong { 
+      font-family: "DynaPuff", system-ui;
+      background: #af9451; 
+      color: white;
+      width: 110px;
+      height: 30px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #linkSong:hover {
+      background-color: #524505;
+    }
+
+    .songSelect {
+      background-color: #fec65b;
+      color: #1a1a1d;
+    }
+
     .message {
       margin-top: 20px;
       font-size: 22px;
-      color: green;
+      color: #1a1a1d;
     }
+
     .scrollableTable {
-      max-height: 800px;
+      max-height: 395px;
       overflow-y: auto;
       margin-top: 20px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      color: #ffffff;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
+      border: 1px solid #d1d1d1;
+      padding: 12px;
+      text-align: center;
     }
     th {
-      background-color: #f2f2f2;
+      background-color: #6c5e41;
+      color: #ffde7d; 
+      font-size: 18px;
     }
+    td {
+      color: #000000; 
+    }
+    .SongRow:hover {
+      background-color: #ffde7d;
+      cursor: pointer;
+    }
+    .SongRow.selected {
+      background-color: #ffde7d;
+    }
+
     #linkSong {
       opacity: 0;
-      transition: opacity 0.3s; /* Smooth transition */
+      transition: opacity 0.3s;
+    }
+    
+    img {
+      width: 160px;
+      height: 160px;
+      margin-bottom: 20px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .fileName {
+      font-size: 20px;
+      color: #ffde7d;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
+  <img src="static/notesart.png" alt="NotesArt Logo">
   <h1>Welcome to NotesArt</h1>
   <form id="uploadForm" enctype="multipart/form-data">
     <button type="button" id="playSong">Play Song</button>
+    <label for="myFile" id="uploadButton">Upload Files</label>
     <input type="file" id="myFile" name="filename">
-    <input type="submit" id="linkSong" value="Add Song to Library">
+    <input type="submit" id="linkSong" value="Add Song">
   </form>
+
+  <div class="fileName" id="fileName"></div>
 
   <div class="scrollableTable">
     <table>
       <thead>
         <tr>
-          <th> </th>
+          <th>#</th>
           <th>Song Name</th>
           <th>Duration</th>
           <th>Difficulty</th>
@@ -84,10 +204,14 @@
   <script>
     let selectedSongIndex = null;
 
-    // Show the 'Add Song' button when a file is selected
+    // Show the file name and "Add Song" button when a file is selected
     document.getElementById("myFile").addEventListener("change", function() {
       const linkSongButton = document.getElementById("linkSong");
+      const fileNameDiv = document.getElementById("fileName");
+      const fileInput = document.getElementById("myFile");
+
       linkSongButton.style.opacity = "1"; // Show the Add Song button
+      fileNameDiv.textContent = "Selected File: " + fileInput.files[0].name; // Show selected file name
     });
 
     // Handle form submission via AJAX
