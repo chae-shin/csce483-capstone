@@ -5,6 +5,7 @@ import sys
 import os
 import subprocess
 import signal
+import pretty_midi
 # sys.path.append(os.path.abspath("../user_input"))
 # import src.software.user_input.piano_to_midi as piano_to_midi
 
@@ -52,6 +53,7 @@ def play_song():
     global song_file
     data = request.get_json()
     song_index = data.get("song_name")
+    # song_duration = data.get()
 
     try:
         # Run the specific Python file based on the song index
@@ -84,7 +86,13 @@ def play_song():
 
 @app.route("/currentlyplaying")
 def playing():
-    return render_template("currentlyplaying.html")
+    song_name = request.args.get('song_name')
+    # song_duration = request.args.get('song_duration')
+    # print(song_duration)
+    # print(type(song_duration))
+    midi_data = pretty_midi.PrettyMIDI('../../../songs/'+song_name)
+    duration = (midi_data.get_end_time())
+    return render_template("currentlyplaying.html",song_name=song_name,song_duration=duration)
 
 @app.route("/stats")
 def stats():

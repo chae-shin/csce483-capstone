@@ -33,7 +33,9 @@
     </style>
 </head>
 <body>
-    <h1>Currently playing: Song Name</h1>
+    <h1>Currently playing: {{song_name}}</h1>
+    <h1>Song Duration: {{song_duration}}</h1>
+
     <div class="progress-container">
         <div class="progress-bar" id="progressBar">0%</div>
     </div>
@@ -42,7 +44,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var progressBar = document.getElementById("progressBar");
-            var duration = 16; // Duration of song seconds
+            const duration = parseFloat("{{ song_duration }}"); // Duration of song in seconds
             var width = 0;
             var interval = (duration * 1000 ) / 100; // Calculate interval in milliseconds
 
