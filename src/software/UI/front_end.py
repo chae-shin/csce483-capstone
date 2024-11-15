@@ -94,7 +94,13 @@ def playing():
     midi_data = pretty_midi.PrettyMIDI('../../../songs/'+song_name)
     #midi_data = pretty_midi.PrettyMIDI('songs/'+song_name)
     duration = (midi_data.get_end_time())
-    return render_template("currentlyplaying.html",song_name=song_name,song_duration=duration)
+    
+    # Convert duration to mm:ss format
+    minutes = int(duration // 60)
+    seconds = int(duration % 60)
+    duration_formatted = f"{minutes:02}:{seconds:02}"  # Format as mm:ss
+    return render_template("currentlyplaying.html",song_name=song_name,song_duration=f"{duration:.2f}", song_duration_formatted=duration_formatted)
+    
 
 @app.route("/stats")
 def stats():

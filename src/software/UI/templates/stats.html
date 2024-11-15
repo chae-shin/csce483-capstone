@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Results</title>
+
+    <!-- Fonts: Galindo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Bangers&family=Boogaloo&family=Galindo&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Fonts: DynaPuff -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Black+Ops+One&family=Chakra+Petch:wght@400;600&family=DynaPuff:wght@400..700&family=Gloria+Hallelujah&family=Josefin+Sans:ital,wght@0,400;1,600&family=Pacifico&family=Permanent+Marker&family=Press+Start+2P&family=Roboto+Mono:ital,wght@1,600&family=Titillium+Web:ital,wght@1,200&family=Yellowtail&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            font-family: "DynaPuff", sans-serif;
+            background-color: #FFF5EE;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: black;
         }
 
         .container {
@@ -20,29 +30,29 @@
         }
 
         h1 {
+            font-family: "Galindo", sans-serif;
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
+            color: black;
+            margin-bottom: 40px;
         }
 
         h2 {
-            color: #34495e;
+            font-family: "Galindo", sans-serif;
             margin-bottom: 10px;
-            font-size: 1.5em;
             text-align: center;
         }
 
         .total-accuracy {
             font-size: 1.8em;
             font-weight: bold;
-            color: #e74c3c;
+            color: #D27D2D;
             margin-top: 20px;
             text-align: center;
         }
 
         .progress-bar-container {
             width: 60%;
-            height: 30px;
+            height: 40px;
             background-color: #ddd;
             border-radius: 15px;
             overflow: hidden;
@@ -58,7 +68,7 @@
             text-align: center;
             color: black;
             font-weight: bold;
-            line-height: 30px;
+            line-height: 40px;
             transition: width 0.3s ease-in-out;
             border-radius: 15px;
         }
@@ -92,19 +102,21 @@
         }
 
         th, td {
+            font-family: "DynaPuff", sans-serif;
             padding: 12px 15px;
             text-align: center;
             border: 1px solid #ddd;
         }
 
         th {
-            background-color: #3498db;
-            color: white;
-            font-size: 1.1em;
+            background-color: #6c5e41;
+            color: #ffde7d;
+            font-size: 1.3em;
         }
 
         td {
             background-color: #f9f9f9;
+            font-size: 1.3em;
         }
 
         tr:hover td {
@@ -113,12 +125,13 @@
 
         .button-container {
             text-align: center;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
         #BacktoHome {
+            font-family: "DynaPuff", sans-serif;
             padding: 10px 20px;
-            background-color: #2ecc71;
+            background-color: #F08000;
             color: white;
             border: none;
             border-radius: 5px;
@@ -128,7 +141,8 @@
         }
 
         #BacktoHome:hover {
-            background-color: #27ae60;
+            background-color: #8B4000;
+            color: #f6f8ed;
         }
 
         @media (max-width: 768px) {
@@ -152,8 +166,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Stat Results</h1>
-        <h2>Song Played: {{song_data}}</h2>
+        <h1>🎼 Performance Results 🎼</h1>
+        <h2>[ Song Played - {{song_data}} ]</h2>
 
         <!-- Total Accuracy -->
         <div class="total-accuracy">
@@ -172,7 +186,7 @@
 
         <!-- Accuracy by Note (Pitch) Table -->
         <div class="accuracy-section">
-            <h2>Accuracy by Note (Pitch):</h2>
+            <h2>[ Accuracy by Note (Pitch) ]</h2>
             <div class="accuracy-table-wrapper">
                 <table class="accuracy-table">
                     <thead>
