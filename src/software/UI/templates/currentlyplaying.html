@@ -4,68 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Currently Playing</title>
+
+    <!-- Fonts: Galindo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Bangers&family=Boogaloo&family=Galindo&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Fonts: DynaPuff -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Black+Ops+One&family=Chakra+Petch:wght@400;600&family=DynaPuff:wght@400..700&family=Gloria+Hallelujah&family=Josefin+Sans:ital,wght@0,400;1,600&family=Pacifico&family=Permanent+Marker&family=Press+Start+2P&family=Roboto+Mono:ital,wght@1,600&family=Titillium+Web:ital,wght@1,200&family=Yellowtail&display=swap" rel="stylesheet">
+  
     <style>
+        h1{
+            font-size: 2.5em;
+        }
+        body{
+            font-family: "Galindo", sans-serif;
+            text-align: center;
+            padding-top: 460px;
+            background: url('static/piano.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            position: relative;
+            color: black;
+        }
         .progress-container {
             width: 100%;
             background-color: #f3f3f3;
             border-radius: 25px;
             margin: 20px 0;
+            margin-top: 35px;
         }
         .progress-bar {
             width: 0;
-            height: 30px;
+            height: 50px;
             background-color: #35a239;
             border-radius: 25px;
             text-align: center;
-            line-height: 30px;
+            line-height: 50px;
+            font-size: 30px;
             color: rgb(0, 0, 0);
         }
-        #viewResultsBtn {
-            display: none;
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-top: 20px;
+        }
+        #SongName{
+            color: #BF40BF; 
+        }
+
+        /* Button Styles */
+        #viewResultsBtn, #StopSongBtn, #HomeBtn {
+            font-family: "DynaPuff", sans-serif;
+            font-size: 1.5em;
             padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 15px;
+        }
+
+        /* View Results Button */
+        #viewResultsBtn {
+            display: none;
+            background-color: #F08000;
+            color: white;
+        }
+        #viewResultsBtn:hover {
+            background: #FF7518;  
+            color: white;
+        }
+
+        /* Stop Button */
+        #StopSongBtn {
+            display: block;
+            background-color: #fe3137;
+            color: black;
+        }
+        #StopSongBtn:hover {
+            background: #7a280f; 
+            color: white;
+        }
+
+        /* Home Button */
+        #HomeBtn {
+            display: none;
+            background-color: #A0522D;
+            color: #f6f8ed;
+        }
+        #HomeBtn:hover {
+            background: #8B4000; 
+            color: #f6f8ed;
         }
     </style>
 </head>
 <body>
-    <h1>Currently playing: {{song_name}}</h1>
-    <h1>Song Duration: {{song_duration}}</h1>
+    <h1>🎵 Currently Playing 🎵 </h1>
+    <h1 id="SongName">{{song_name}}</h1>
+    <h1>Duration: {{song_duration_formatted}}</h1>
 
     <div class="progress-container">
         <div class="progress-bar" id="progressBar">0%</div>
     </div>
-    <!-- View Results Button will appear after song duration completes -->
-    <button id="viewResultsBtn" onclick="viewResults()">View Results</button>
+    <div class = "buttons-container">
+        <!-- Stop Button will appear BEFORE song duration completes -->
+        <button id="StopSongBtn" onclick="stopSong()">STOP</button>
+        <!-- Home Button will appear AFTER song duration completes OR song has stopped -->
+        <button id="HomeBtn" onclick="home()">HOME</button>
+        <!-- View Results Button will appear after song duration completes -->
+        <button id="viewResultsBtn" onclick="viewResults()">View Results</button>
+    </div>
     <script>
+
         document.addEventListener("DOMContentLoaded", function() {
-            var progressBar = document.getElementById("progressBar");
-            const duration = parseFloat("{{ song_duration }}"); // Duration of song in seconds
-            var width = 0;
-            var interval = (duration * 1000 ) / 100; // Calculate interval in milliseconds
+        var progressBar = document.getElementById("progressBar");
+        const duration = parseFloat("{{ song_duration }}"); // Duration of song in seconds
+        var elapsedSeconds = 0;
+        var progressInterval;
+        
+        function updateProgressBar() {
+            if (elapsedSeconds >= duration) {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+               
+                // Calculate final time as minutes and seconds
+                var finalMinutes = Math.floor(duration / 60);
+                var finalSeconds = Math.floor(duration % 60);
+                progressBar.innerHTML = `${finalMinutes < 10 ? '0' : ''}${finalMinutes}:${finalSeconds < 10 ? '0' : ''}${finalSeconds}`;
+               
+                document.getElementById("viewResultsBtn").style.display = 'block';
+                document.getElementById("StopSongBtn").style.display = 'none';
+                document.getElementById("HomeBtn").style.display = 'block';
+            } else {
+                elapsedSeconds++;
+                var width = (elapsedSeconds / duration) * 100;
+                progressBar.style.width = width + '%';
+                
+                // Calculate minutes and seconds
+                var minutes = Math.floor(elapsedSeconds / 60);
+                var seconds = Math.floor(elapsedSeconds % 60);
 
-            function updateProgressBar() {
-                if (width >= 100) {
-                    clearInterval(progressInterval);
-                    viewResultsBtn.style.display = 'block'; // Show the "View Results" button after the progress completes
-                } else {
-                    width++;
-                    var elapsedSeconds = (width / 100) * duration;
-                    progressBar.style.width = width + '%';
-                    progressBar.innerHTML = '00:' + elapsedSeconds.toFixed(0);
-                }
+                // Display time in mm:ss format
+                progressBar.innerHTML = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
             }
+        }
+            var progressInterval = setInterval(updateProgressBar, 1000);
 
-            var progressInterval = setInterval(updateProgressBar, interval);
+            // Stop the progress bar when the "Stop" button is clicked
+            function stopSong() {
+                clearInterval(progressInterval); // Stop updating the progress bar
+                document.getElementById("StopSongBtn").style.display = 'none';
+                document.getElementById("HomeBtn").style.display = 'block';
+                document.getElementById("viewResultsBtn").style.display = 'block';
+            }
+            document.getElementById("StopSongBtn").onclick = stopSong;
         });
 
         function viewResults() {
             // Redirect to stats.html
             window.location.href = "/stats";
+        }
+
+        function home() {
+            // Redirect to stats.html
+            window.location.href = "/";
         }
     </script>
 </body>
