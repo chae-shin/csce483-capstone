@@ -24,6 +24,17 @@ class MIDIfile:
         self.note_intervals = {}
         self.get_note_intervals()
 
+        self.offset = None
+
+        time_signatures = self.midi_data.time_signature_changes
+        if time_signatures:
+            # Return the first time signature change as the main time signature
+            ts = time_signatures[0]
+
+            self.LEDs_per_strip = 50
+            self.offset_beats = self.LEDs_per_strip / ts.numerator
+            self.offset = self.offset_beats / (self.midi_data.estimate_tempo()/60)
+
 
     def extract_notes(self):
         # Extract all notes from all instruments in the MIDI file
@@ -58,6 +69,8 @@ def generate_by_note_stat(midi_ref_path, midi_user_path):
     intervals_ref = midi_ref.note_intervals # reference midi intervals
     intervals_user = midi_user.note_intervals # user midi intervals
 
+    offset = midi_ref.offset
+
     # dictionaires of correct notes and missed notes by pitch
     correct_notes = {}
     missed_notes = {}
@@ -71,7 +84,7 @@ def generate_by_note_stat(midi_ref_path, midi_user_path):
         if pitch not in intervals_user:
             intervals_user[pitch] = []
 
-    tolerance = 0.2  # Tolerance in seconds for timing deviation
+    tolerance = 1  # Tolerance in seconds for timing deviation
 
     for pitch in intervals_ref: # for every pitch in the reference song
         ref = intervals_ref[pitch] # gets the list of intervals from the reference
@@ -79,6 +92,8 @@ def generate_by_note_stat(midi_ref_path, midi_user_path):
         for ref_start, ref_end in ref: # check the overlap of notes in ref with notes in user
             found = False
             for user_start, user_end in user:
+                user_start -= offset
+                user_end -= offset
                 if abs(ref_start - user_start) <= tolerance and abs(ref_end - user_end) <= tolerance:
                     correct_notes[pitch].append(ref)
                     found = True
@@ -106,11 +121,14 @@ def total_accuracy(midi_ref_path, midi_user_path):
     intervals_ref = midi_ref.note_intervals  # Reference MIDI intervals 
     intervals_user = midi_user.note_intervals # User-played MIDI intervals 
 
+    offset = midi_ref.offset
+
+
     # Initialize counters and dictionaries
     correct_notes = 0
     missed_notes = 0
     total_ref_notes = 0
-    tolerance = 10  # Tolerance in seconds for timing deviation10
+    tolerance = 1  # Tolerance in seconds for timing deviation10
 
     # Iterate over each note (pitch) in the reference MIDI intervals
     for pitch in intervals_ref:
@@ -121,6 +139,8 @@ def total_accuracy(midi_ref_path, midi_user_path):
         for ref_start, ref_end in ref_intervals:
             found = False
             for user_start, user_end in user_intervals:
+                user_start -= offset
+                user_end -= offset
                 if (abs(ref_start - user_start) <= tolerance and abs(ref_end - user_end) <= tolerance):
                     correct_notes += 1
                     found = True
