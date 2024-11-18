@@ -6,6 +6,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning) 
 import tkinter as tk
 from tkinter import messagebox
+import mido
 
 # MIDI file custom class
 class MIDIfile:
@@ -23,17 +24,27 @@ class MIDIfile:
         
         self.note_intervals = {}
         self.get_note_intervals()
+        
+        def get_bpm(path):
+            mid = mido.MidiFile(path)
+            for track in mid.tracks:
+                for msg in track:
+                    if msg.type == 'set_tempo':
+                        tempo = msg.tempo
+                        bpm = mido.tempo2bpm(tempo)
+                        return bpm
+            return None 
 
         self.offset = None
+        self.bpm = get_bpm(midi_file_path)
+        self.offset = ((1/(self.bpm/60))/4 )*50  # Calculate the offset in seconds
 
-        time_signatures = self.midi_data.time_signature_changes
-        if time_signatures:
-            # Return the first time signature change as the main time signature
-            ts = time_signatures[0]
-
-            self.LEDs_per_strip = 50
-            self.offset_beats = self.LEDs_per_strip / ts.numerator
-            self.offset = self.offset_beats / (self.midi_data.estimate_tempo()/60)
+        print("************************************")
+        print(midi_file_path)
+        print("offset: ", self.offset)
+        for pitch in self.note_intervals:
+           print(pitch, self.note_intervals[pitch])
+        print("************************************")
 
 
     def extract_notes(self):

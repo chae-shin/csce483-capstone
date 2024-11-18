@@ -40,7 +40,8 @@ from rpi_ws281x import PixelStrip, Color
 import time
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-from mido import MidiFile
+import mido
+# import pretty_midi
 
 # LED matrix configuration:
 LED_WIDTH = 50          # Number of LEDs in the width (columns)
@@ -114,7 +115,7 @@ def run_midi_visualization(strip):
             alt_colors.append((0, 0, 0))
 
     # Convert MIDI file to LED arrays for the notes
-    midi_file_path = "/home/capstone/csce483-capstone/songs/mary_right_hand.mid"
+    midi_file_path = "/home/capstone/csce483-capstone/songs/testing.mid"
     led_arrays = midi_to_led_arrays(midi_file_path, notes, colors, alt_colors)
 
     # Each note gets 50 LEDs
@@ -131,8 +132,13 @@ def run_midi_visualization(strip):
 
     # Find the maximum length among all led_arrays
     max_length = max(len(led_arrays[note]) for note in notes) + leds_per_note
-
-    frame_duration = 0.01  # Desired frame duration in seconds
+    # print("max_length",max_length)
+    bpm = get_bpm(midi_file_path)
+    print("song BPM",bpm)
+    frame_duration = (1/(bpm/60))/4  # Desired frame duration in seconds
+    print("fram_duration",frame_duration)
+    total_time = max_length * frame_duration
+    print("actual total time",total_time)
 
     for i in range(max_length):
         start_time = time.time()
@@ -175,14 +181,29 @@ def run_midi_visualization(strip):
         elapsed_time = time.time() - start_time
         time_to_sleep = frame_duration - elapsed_time
         if time_to_sleep > 0:
+            print("sleeping:", time_to_sleep)
             time.sleep(time_to_sleep)
 
     # Clear the strip at the end
     clear_strip(strip)
 
+
+
+import mido
+
+def get_bpm(midi_file_path):
+    mid = mido.MidiFile(midi_file_path)
+    for track in mid.tracks:
+        for msg in track:
+            if msg.type == 'set_tempo':
+                tempo = msg.tempo
+                bpm = mido.tempo2bpm(tempo)
+                return bpm
+    return None 
+
 # Function to convert a single MIDI file to LED arrays for specified notes
 def midi_to_led_arrays(midi_file_path, notes, colors, alt_colors):
-    midi = MidiFile(midi_file_path)
+    midi = mido.MidiFile(midi_file_path)
     led_arrays = {note: [] for note in notes}
     note_on_times = {note: [] for note in notes}
     last_note_end_times = {note: 0 for note in notes}
