@@ -117,5 +117,10 @@ def stats():
     acc_by_notes = generate_by_note_stat(midi_reference, midi_user)
     return render_template("stats.html", song_data=song_file, total_accuracy=total_acc, accuracy_by_notes=acc_by_notes)
 
+def midi_reference_path():
+    global song_file
+    midi_file_path = "/home/capstone/csce483-capstone/songs/"+str(song_file)
+    return midi_file_path
+
 if __name__ == "__main__":
     app.run(debug=True)
