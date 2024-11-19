@@ -1,58 +1,19 @@
-# import time
-# from rpi_ws281x import PixelStrip, Color
-
-# # LED strip configuration:
-# LED_COUNT      = 1800    # Total number of LEDs
-# LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!)
-# LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800kHz)
-# LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
-# LED_BRIGHTNESS = 25     # Set to 0 for darkest and 255 for brightest
-# LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
-# LED_CHANNEL    = 0       # Set to 1 for GPIOs 13, 19, 41, 45 or 53
-
-# def turn_on_all_leds(strip, color):
-#     """Turn on all LEDs to the specified color."""
-#     for i in range(strip.numPixels()):
-#         strip.setPixelColor(i, color)
-#     strip.show()
-
-# def main():
-#     # Create NeoPixel object with configuration.
-#     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-#     strip.begin()
-
-#     # Define the color (red, green, blue)
-#     color = Color(255, 0, 0)  # Red color
-
-#     # Turn on all LEDs
-#     turn_on_all_leds(strip, color)
-
-#     # Keep the LEDs on for 10 seconds
-#     time.sleep(20)
-
-#     # Clear the strip
-#     turn_on_all_leds(strip, Color(0, 0, 0))
-
-# if __name__ == "__main__":
-#     main()
-
 from rpi_ws281x import PixelStrip, Color
 import time
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import mido
-# import pretty_midi
 
 # LED matrix configuration:
 LED_WIDTH = 50          # Number of LEDs in the width (columns)
-LED_HEIGHT = 40         # Number of LEDs in the height (rows)
-LED_COUNT = LED_WIDTH * LED_HEIGHT  # Total number of LEDs (2000)
+LED_HEIGHT = 34         # Number of LEDs in the height (rows), adjusted to match the number of notes
+LED_COUNT = LED_WIDTH * LED_HEIGHT  # Total number of LEDs (1700)
 LED_PIN = 18            # GPIO pin connected to the pixels (must support PWM!)
 LED_FREQ_HZ = 800000    # LED signal frequency in hertz (usually 800kHz)
 LED_DMA = 10            # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 50     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 150    # Set to 0 for darkest and 255 for brightest
 LED_INVERT = False      # True to invert the signal (when using NPN transistor level shift)
-LED_CHANNEL = 0         # Set to 1 for GPIOs 13, 19, 41, 45 or 53
+LED_CHANNEL = 0         # Set to 0 for GPIOs 18, 19, 41, 45 or 53
 
 # Create a mapping from 2D coordinates to 1D LED strip index
 def get_led_index(x, y):
@@ -72,14 +33,10 @@ def clear_strip(strip):
 
 # Function to run the MIDI visualization
 def run_midi_visualization(strip):
-    # Define notes for C2 to B4 (36 notes)
-    notes = list(range(36, 72))  # MIDI notes from C2 (36) to B4 (71)
+    # Define notes from C3 (MIDI note 48) to A♭5 (MIDI note 81)
+    notes = list(range(48, 82))  # MIDI notes from C3 (48) to A♭5 (81)
 
     # Identify white and black keys for each octave
-    # Octave 2 (C2 to B2)
-    white_keys_octave2 = [36, 38, 40, 41, 43, 45, 47]
-    black_keys_octave2 = [37, 39, 42, 44, 46]
-
     # Octave 3 (C3 to B3)
     white_keys_octave3 = [48, 50, 52, 53, 55, 57, 59]
     black_keys_octave3 = [49, 51, 54, 56, 58]
@@ -88,34 +45,38 @@ def run_midi_visualization(strip):
     white_keys_octave4 = [60, 62, 64, 65, 67, 69, 71]
     black_keys_octave4 = [61, 63, 66, 68, 70]
 
+    # Octave 5 (C5 to B5)
+    white_keys_octave5 = [72, 74, 76, 77, 79, 81]  # Up to A♭5 (81)
+    black_keys_octave5 = [73, 75, 78, 80]
+
     colors = []
     alt_colors = []
 
     for note in notes:
-        if note in white_keys_octave2:
-            colors.append((255, 0, 0))      # Base red for octave 2 white keys
-            alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in black_keys_octave2:
-            colors.append((153, 0, 153))    # Base purple for octave 2 black keys
-            alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in white_keys_octave3:
-            colors.append((0, 255, 0))      # Base green for octave 3 white keys
+        if note in white_keys_octave3:
+            colors.append((255, 0, 0))      # Base red for octave 3 white keys
             alt_colors.append((255, 255, 255))  # White for alternation
         elif note in black_keys_octave3:
             colors.append((153, 0, 153))    # Base purple for octave 3 black keys
             alt_colors.append((255, 255, 255))  # White for alternation
         elif note in white_keys_octave4:
-            colors.append((0, 0, 255))    # Base blue for octave 4 white keys
+            colors.append((0, 0, 255))      # Base blue for octave 4 white keys
             alt_colors.append((255, 255, 255))  # White for alternation
         elif note in black_keys_octave4:
             colors.append((153, 0, 153))    # Base purple for octave 4 black keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in white_keys_octave5:
+            colors.append((0, 255, 0))      # Base green for octave 5 white keys
+            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note in black_keys_octave5:
+            colors.append((153, 0, 153))    # Base purple for octave 5 black keys
             alt_colors.append((255, 255, 255))  # White for alternation
         else:
             colors.append((0, 0, 0))        # Default to black if note is not identified
             alt_colors.append((0, 0, 0))
 
     # Convert MIDI file to LED arrays for the notes
-    midi_file_path = "/home/capstone/csce483-capstone/songs/testing.mid"
+    midi_file_path = "/home/capstone/csce483-capstone/songs/full_test.mid"  # Replace with your MIDI file path
     led_arrays = midi_to_led_arrays(midi_file_path, notes, colors, alt_colors)
 
     # Each note gets 50 LEDs
@@ -132,13 +93,12 @@ def run_midi_visualization(strip):
 
     # Find the maximum length among all led_arrays
     max_length = max(len(led_arrays[note]) for note in notes) + leds_per_note
-    # print("max_length",max_length)
     bpm = get_bpm(midi_file_path)
-    print("song BPM",bpm)
-    frame_duration = (1/(bpm/60))/4  # Desired frame duration in seconds
-    print("fram_duration",frame_duration)
+    print("Song BPM:", bpm)
+    frame_duration = (1 / (bpm / 60)) / 4  # Desired frame duration in seconds
+    print("Frame Duration:", frame_duration)
     total_time = max_length * frame_duration
-    print("actual total time",total_time)
+    print("Actual Total Time:", total_time)
 
     for i in range(max_length):
         start_time = time.time()
@@ -181,15 +141,11 @@ def run_midi_visualization(strip):
         elapsed_time = time.time() - start_time
         time_to_sleep = frame_duration - elapsed_time
         if time_to_sleep > 0:
-            print("sleeping:", time_to_sleep)
+            # print("sleeping:", time_to_sleep)
             time.sleep(time_to_sleep)
 
     # Clear the strip at the end
     clear_strip(strip)
-
-
-
-import mido
 
 def get_bpm(midi_file_path):
     mid = mido.MidiFile(midi_file_path)
@@ -199,7 +155,7 @@ def get_bpm(midi_file_path):
                 tempo = msg.tempo
                 bpm = mido.tempo2bpm(tempo)
                 return bpm
-    return None 
+    return None
 
 # Function to convert a single MIDI file to LED arrays for specified notes
 def midi_to_led_arrays(midi_file_path, notes, colors, alt_colors):
@@ -228,16 +184,13 @@ def midi_to_led_arrays(midi_file_path, notes, colors, alt_colors):
                     # Determine if there was a significant rest before this note
                     gap_ticks = note_on_time - last_note_end_times[msg.note]
                     if gap_ticks > rest_threshold_ticks:
-                        # There was a rest, reset consecutive note count
+                        # There was a significant rest, add black LEDs and reset the consecutive note count
                         rest_leds = int(gap_ticks * led_per_tick)
                         led_arrays[msg.note].extend([(0, 0, 0)] * rest_leds)
                         consecutive_note_counts[msg.note] = -1  # Start at -1 to use base color first
                     else:
-                        # No significant rest
-                        # If there is a small gap, fill it without resetting the count
-                        if gap_ticks > 0:
-                            gap_leds = int(gap_ticks * led_per_tick)
-                            led_arrays[msg.note].extend([(0, 0, 0)] * gap_leds)
+                        # No significant rest; ignore tiny gaps
+                        pass  # Do not add black LEDs for tiny gaps
 
                     # Increment the consecutive note count
                     consecutive_note_counts[msg.note] += 1
@@ -314,8 +267,8 @@ def run_notesart_animation(strip):
         strip.show()
 
         # Wait to maintain frame rate
-        elapsed = time.time() - start_time
-        sleep_time = frame_delay - elapsed
+        elapsed_time = time.time() - start_time
+        sleep_time = frame_delay - elapsed_time
         if sleep_time > 0:
             time.sleep(sleep_time)
 
