@@ -1,4 +1,4 @@
-SCRIPT_DIR="~/"
+SCRIPT_DIR="/home/capstone/csce483-capstone/src/software/UI"
 PYTHON_FILE="front_end.py"
 
 
@@ -16,4 +16,4 @@ else
     exit 1
 fi
 
-firefox &
+firefox "http://127.0.0.1:5000/" 
