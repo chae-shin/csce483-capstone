@@ -1,3 +1,4 @@
+#/bin/bash
 SCRIPT_DIR="/home/capstone/csce483-capstone/src/software/UI"
 PYTHON_FILE="front_end.py"
 

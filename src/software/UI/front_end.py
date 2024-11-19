@@ -6,6 +6,8 @@ import os
 import subprocess
 import signal
 import pretty_midi
+import mido
+
 # sys.path.append(os.path.abspath("../user_input"))
 # import src.software.user_input.piano_to_midi as piano_to_midi
 
@@ -91,10 +93,20 @@ def playing():
     # song_duration = request.args.get('song_duration')
     # print(song_duration)
     # print(type(song_duration))
-    midi_data = pretty_midi.PrettyMIDI('../../../songs/'+song_name)
+    SONG_PATH = '../../../songs/'+song_name
+    midi_data = pretty_midi.PrettyMIDI(SONG_PATH)
     #midi_data = pretty_midi.PrettyMIDI('songs/'+song_name)
     duration = (midi_data.get_end_time())
-    
+    def get_bpm(path):
+        mid = mido.MidiFile(path)
+        for track in mid.tracks:
+            for msg in track:
+                if msg.type == 'set_tempo':
+                    tempo = msg.tempo
+                    bpm = mido.tempo2bpm(tempo)
+                    return bpm
+        return None
+    duration += ((1/(get_bpm(SONG_PATH)/60))/4 )*50
     # Convert duration to mm:ss format
     minutes = int(duration // 60)
     seconds = int(duration % 60)

@@ -70,7 +70,7 @@ def run_midi_visualization(strip):
             alt_colors.append((0, 0, 0))
 
     # Convert MIDI file to LED arrays for the notes
-    midi_file_path = "/home/capstone/csce483-capstone/songs/full_test.mid"  # Replace with your MIDI file path
+    midi_file_path = "/home/capstone/csce483-capstone/songs/testing.mid"  # Replace with your MIDI file path
     led_arrays = midi_to_led_arrays(midi_file_path, notes, colors, alt_colors)
 
     # Each note gets 50 LEDs
