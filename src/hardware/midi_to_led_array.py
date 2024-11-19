@@ -33,46 +33,40 @@ def clear_strip(strip):
 
 # Function to run the MIDI visualization
 def run_midi_visualization(strip):
-    # Define notes from C3 (MIDI note 48) to A♭5 (MIDI note 81)
-    notes = list(range(48, 82))  # MIDI notes from C3 (48) to A♭5 (81)
-
-    # Identify white and black keys for each octave
-    # Octave 3 (C3 to B3)
-    white_keys_octave3 = [48, 50, 52, 53, 55, 57, 59]
-    black_keys_octave3 = [49, 51, 54, 56, 58]
-
-    # Octave 4 (C4 to B4)
-    white_keys_octave4 = [60, 62, 64, 65, 67, 69, 71]
-    black_keys_octave4 = [61, 63, 66, 68, 70]
-
-    # Octave 5 (C5 to B5)
-    white_keys_octave5 = [72, 74, 76, 77, 79, 81]  # Up to A♭5 (81)
-    black_keys_octave5 = [73, 75, 78, 80]
+    # Define notes from C3 (MIDI note 48) to A5 (MIDI note 81)
+    notes = list(range(48, 82))  # MIDI notes from C3 (48) to A5 (81)
 
     colors = []
     alt_colors = []
 
     for note in notes:
-        if note in white_keys_octave3:
-            colors.append((255, 0, 0))      # Base red for octave 3 white keys
+        note_mod = note % 12
+        if note_mod == 0:  # C
+            colors.append((255, 200, 0))  # Yellow
             alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in black_keys_octave3:
-            colors.append((153, 0, 153))    # Base purple for octave 3 black keys
-            alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in white_keys_octave4:
-            colors.append((0, 0, 255))      # Base blue for octave 4 white keys
-            alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in black_keys_octave4:
-            colors.append((153, 0, 153))    # Base purple for octave 4 black keys
-            alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in white_keys_octave5:
-            colors.append((0, 255, 0))      # Base green for octave 5 white keys
-            alt_colors.append((255, 255, 255))  # White for alternation
-        elif note in black_keys_octave5:
-            colors.append((153, 0, 153))    # Base purple for octave 5 black keys
-            alt_colors.append((255, 255, 255))  # White for alternation
+        elif note_mod == 2:  # D
+            colors.append((255, 0, 255))  # Magenta
+            alt_colors.append((255, 255, 255))
+        elif note_mod == 4:  # E
+            colors.append((0, 255, 255))  # Cyan
+            alt_colors.append((255, 255, 255))
+        elif note_mod == 5:  # F
+            colors.append((255, 70, 0))  # Orange
+            alt_colors.append((255, 255, 255))
+        elif note_mod == 7:  # G
+            colors.append((102, 0, 204))  # Purple
+            alt_colors.append((255, 255, 255))
+        elif note_mod == 9:  # A
+            colors.append((0, 255, 0))  # Green
+            alt_colors.append((255, 255, 255))
+        elif note_mod == 11:  # B
+            colors.append((0, 0, 255))  # Blue
+            alt_colors.append((255, 255, 255))
+        elif note_mod in [1, 3, 6, 8, 10]:  # Black keys
+            colors.append((255, 0, 0))  # Red for black keys
+            alt_colors.append((255, 255, 255))
         else:
-            colors.append((0, 0, 0))        # Default to black if note is not identified
+            colors.append((0, 0, 0))  # Default to black
             alt_colors.append((0, 0, 0))
 
     # Convert MIDI file to LED arrays for the notes
@@ -155,7 +149,7 @@ def get_bpm(midi_file_path):
                 tempo = msg.tempo
                 bpm = mido.tempo2bpm(tempo)
                 return bpm
-    return None
+    return 120  # Default BPM if not specified
 
 # Function to convert a single MIDI file to LED arrays for specified notes
 def midi_to_led_arrays(midi_file_path, notes, colors, alt_colors):
