@@ -3,7 +3,14 @@ import time
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import mido
-from src.software.UI.front_end import midi_reference_path 
+import sys
+import os
+# from src.software.UI.front_end import midi_reference_path 
+sys.path.append(os.path.abspath("/home/capstone/csce483-capstone/src/software/UI/"))
+
+from front_end import midi_reference_path
+
+
 
 # LED matrix configuration:
 LED_WIDTH = 50          # Number of LEDs in the width (columns)
