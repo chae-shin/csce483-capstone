@@ -73,4 +73,4 @@ except KeyboardInterrupt:
         total_duration = end_time - start_time
         print(f"Total song duration: {total_duration:.3f} seconds")
         userSong.instruments.append(piano)
-        userSong.write('UserInputRecorded/user.mid')
+        userSong.write('/home/capstone/csce483-capstone/src/software/UI/UserInputRecorded/user.mid')

@@ -12,7 +12,7 @@ import mido
 # import src.software.user_input.piano_to_midi as piano_to_midi
 
 
-sys.path.append(os.path.abspath("../comparison"))
+sys.path.append(os.path.abspath("/home/capstone/csce483-capstone/src/software/comparison"))
 # print(sys.path)
 
 from Comparison import total_accuracy, generate_by_note_stat
@@ -21,7 +21,7 @@ from Comparison import total_accuracy, generate_by_note_stat
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = '../../../songs/'
+UPLOAD_FOLDER = '/home/capstone/csce483-capstone/songs/'
 #UPLOAD_FOLDER = 'songs/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -66,8 +66,8 @@ def play_song():
         # subprocess.run(["python3", "diddy.py", song_file], check=True)
         
         # Popen should run the processes in parallel
-        processLights = subprocess.Popen(["sudo","python3", "../../hardware/midi_to_led_array.py", song_file])
-        processRecord = subprocess.Popen(["python3", "../user_input/piano_to_midi.py", song_file])
+        processLights = subprocess.Popen(["sudo","python3", "/home/capstone/csce483-capstone/src/hardware/midi_to_led_array.py", song_file])
+        processRecord = subprocess.Popen(["python3", "/home/capstone/csce483-capstone/src/software/user_input/piano_to_midi.py", song_file])
         
         processLights.wait()
         processRecord.send_signal(signal.SIGINT)
@@ -93,7 +93,7 @@ def playing():
     # song_duration = request.args.get('song_duration')
     # print(song_duration)
     # print(type(song_duration))
-    SONG_PATH = '../../../songs/'+song_name
+    SONG_PATH = midi_reference_path(song_name)
     midi_data = pretty_midi.PrettyMIDI(SONG_PATH)
     #midi_data = pretty_midi.PrettyMIDI('songs/'+song_name)
     duration = (midi_data.get_end_time())
@@ -119,9 +119,9 @@ def stats():
     global song_file
     import string
     # Name of MIDI files
-    midi_reference = "../../../songs/"+str(song_file)
+    midi_reference = midi_reference_path(str(song_file))
     #midi_reference = "songs/"+str(song_file)
-    midi_user = "UserInputRecorded/user.mid"
+    midi_user = "/home/capstone/csce483-capstone/src/software/UI/UserInputRecorded/user.mid"
     print("midi_reference: ", midi_reference)
     
     # Calculate total accuracy and accuracy by notes

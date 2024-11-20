@@ -3,7 +3,7 @@ import os
 
 def song_data():
     song_data_list = []
-    folder_path = '../../../songs/'
+    folder_path = '/home/capstone/csce483-capstone/songs/'
     #folder_path = 'songs/'
     for filename in os.listdir(folder_path):
         if filename.endswith('.mid'):
